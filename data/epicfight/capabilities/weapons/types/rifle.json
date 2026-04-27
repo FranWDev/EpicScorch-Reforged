@@ -1,0 +1,48 @@
+{
+  "collider": {
+    "number": 3,
+    "size": [
+      0.4,
+      0.4,
+      0.55
+    ],
+    "center": [
+      0.0,
+      0.0,
+      -0.25
+    ]
+  },
+  "livingmotion_modifier": {
+    "common": {
+      "creative_fly": "epicscorch:biped/living/hold_rifle_mid",
+      "aim": "epicscorch:biped/combat/rifle_aim_mid",
+      "idle": "epicscorch:biped/living/hold_rifle_mid",
+      "run": "epicscorch:biped/living/run_rifle_mid",
+      "float": "epicscorch:biped/living/hold_rifle_mid",
+      "shot": "epicscorch:biped/living/hold_rifle_mid",
+      "fly": "epicscorch:biped/living/hold_rifle_mid",
+      "creative_idle": "epicscorch:biped/living/hold_rifle_mid",
+      "reload": "epicscorch:biped/combat/rifle_reload",
+      "fall": "epicscorch:biped/living/hold_rifle_mid",
+      "sneak": "epicscorch:biped/living/sneak_rifle_mid",
+      "walk": "epicscorch:biped/living/walk_rifle_mid",
+      "swim": "epicscorch:biped/living/hold_rifle_mid",
+      "kneel": "epicscorch:biped/living/hold_rifle_mid",
+      "sit": "epicscorch:biped/living/hold_rifle_mid"
+    }
+  },
+  "hit_sound": "epicfight:entity.hit.blunt_hard",
+  "hit_particle": "epicfight:hit_blunt",
+  "swing_sound": "epicfight:entity.weapon.whoosh_hard",
+  "styles": {
+    "default": "ranged",
+    "cases": []
+  },
+  "combos": {
+    "common": [
+      "wom:biped/skill/kick",
+      "wom:biped/combat/enderblaster_twohand_tishnaw"
+    ]
+  },
+  "category": "ranged"
+}

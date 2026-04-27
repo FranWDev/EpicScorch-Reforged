@@ -1,0 +1,41 @@
+{
+	"parent": "builtin/entity",
+	"textures": {
+		"1": "scguns:item/anthralite_ingot",
+		"particle": "scguns:item/anthralite_ingot"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [ -12.25, 0, 0],
+			"translation": [ 0.25, 16.25, -8.75],
+			"scale": [1.1, 1.1, 1.1]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [68.25, 0, 0],
+			"rotation": [ -12.25, 0, 0],
+			"translation": [ 0.25, 16.25, -8.75],
+			"scale": [1.1, 1.1, 1.1]
+		},
+		"firstperson_righthand": {
+			"rotation": [0.75, 0.26, 18.75],
+			"translation": [-5.25, 10, -0.5]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0.75, 0.26, 18.75],
+			"translation": [-5.25, 10, -0.5]
+		},
+		"ground": {
+			"translation": [0, 6, 0]
+		},
+		"gui": {
+			"rotation": [75.65, -48.51, 72.56],
+			"translation": [-1.25, 4.75, 0],
+			"scale": [0.75, 0.75, 0.75]
+		},
+		"fixed": {
+			"rotation": [-90, 90, 90],
+			"translation": [-7.25, 10, 0],
+			"scale": [2.0, 2.0, 2.0]
+		}
+	}
+}

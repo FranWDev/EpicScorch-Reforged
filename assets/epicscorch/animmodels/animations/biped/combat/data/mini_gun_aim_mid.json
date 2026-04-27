@@ -1,0 +1,27 @@
+{
+	"layer":"COMPOSITE_LAYER",
+	"priority":"MIDDLE",
+	"masks":
+	[
+		{
+			"livingmotion":"ALL",
+			"type":"root_upper_joints"
+		},
+		{
+			"livingmotion":"SWIM",
+			"type":"upper_joints"
+		},
+		{
+			"livingmotion":"CREATIVE_FLY",
+			"type":"arms"
+		},
+		{
+			"livingmotion":"FLY",
+			"type":"arms"
+		},
+		{
+			"livingmotion":"FALL",
+			"type":"arms"
+		}
+	]
+}

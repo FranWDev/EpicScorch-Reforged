@@ -1,0 +1,49 @@
+{
+  "collider": {
+    "number": 3,
+    "size": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "center": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "livingmotion_modifier": {
+    "common": {
+      "creative_fly": "wom:biped/skill/enderblaster_twohand_aiming",
+      "aim": "wom:biped/skill/enderblaster_twohand_aiming",
+      "idle": "wom:biped/skill/enderblaster_twohand_aiming",
+      "run": "wom:biped/skill/enderblaster_twohand_aiming",
+      "float": "wom:biped/skill/enderblaster_twohand_aiming",
+      "shot": "wom:biped/skill/enderblaster_twohand_aiming",
+      "fly": "wom:biped/living/enderblaster_twohand_idle",
+      "reload": "wom:biped/skill/enderblaster_twohand_aiming",
+      "creative_idle": "wom:biped/skill/enderblaster_twohand_aiming",
+      "fall": "wom:biped/skill/enderblaster_twohand_aiming",
+      "sneak": "wom:biped/skill/enderblaster_twohand_aiming",
+      "walk": "wom:biped/skill/enderblaster_twohand_aiming",
+      "swim": "wom:biped/living/enderblaster_twohand_idle",
+      "kneel": "wom:biped/skill/enderblaster_twohand_aiming",
+      "sit": "wom:biped/skill/enderblaster_twohand_aiming"
+    }
+  },
+  "hit_particle": "epicfight:hit_blunt",
+  "hit_sound": "epicfight:entity.hit.blunt_hard",
+  "swing_sound": "epicfight:entity.weapon.whoosh_hard",
+  "combos": {
+    "common": [
+      "wom:biped/skill/kick",
+      "wom:biped/combat/enderblaster_twohand_tishnaw"
+    ]
+  },
+  "styles": {
+    "default": "ranged",
+    "cases": []
+  },
+  "category": "ranged",
+  "usable_in_offhand": false
+}

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Specification-Title: epicscorch
+Specification-Vendor: Boone
+Specification-Version: 1
+Implementation-Title: EpicScorch
+Implementation-Version: 1.0.0
+Implementation-Vendor: Boone
+Implementation-Timestamp: 2024-12-29T15:34:42-0500
+MixinConfigs: epicscorch.mixins.json
+

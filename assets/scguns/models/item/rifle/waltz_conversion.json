@@ -1,0 +1,39 @@
+{
+	"parent": "builtin/entity",
+	"textures": {
+		"1": "scguns:item/treated_brass_ingot",
+		"particle": "scguns:item/treated_brass_ingot"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [ -12.25, 0, 0],
+			"translation": [ 0.5, 14.30, -10.70],
+			"scale": [1.3, 1.3, 1.3]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [ -12.25, 0, 0],
+			"translation": [ 0.5, 14.30, -10.70],
+			"scale": [1.3, 1.3, 1.3]
+		},
+		"firstperson_righthand": {
+			"translation": [-4.5, 8.5, -1]
+		},
+		"firstperson_lefthand": {
+			"translation": [-4.5, 8.5, -1]
+		},
+		"ground": {
+			"translation": [0, 9.5, -3.75],
+			"scale": [1.3, 1.3, 1.3]
+		},
+		"gui": {
+			"rotation": [74.02, -53.34, 70.48],
+			"translation": [-0.5, 5.5, 0],
+			"scale": [1.1, 1.1, 1.1]
+		},
+		"fixed": {
+			"rotation": [0, 90, 0],
+			"translation": [-5, 7.75, 0],
+			"scale": [2, 2, 2]
+		}
+	}
+}
