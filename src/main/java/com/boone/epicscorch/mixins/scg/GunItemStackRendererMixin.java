@@ -23,24 +23,24 @@ public class GunItemStackRendererMixin extends BlockEntityWithoutLevelRenderer {
    }
 
    @Overwrite(remap = false)
-   public void m_108829_(ItemStack stack, ItemDisplayContext context, PoseStack poseStack, MultiBufferSource source, int light, int overlay) {
-      Minecraft mc = Minecraft.m_91087_();
+   public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack poseStack, MultiBufferSource source, int light, int overlay) {
+      Minecraft mc = Minecraft.getInstance();
       GunOwnerCapabilityProvider.OwnerId ownerId = (GunOwnerCapabilityProvider.OwnerId)stack.getCapability(ModCapabilities.OWNER_ID).orElse(null);
       LivingEntity livingEntity = null;
-      if (ownerId != null && mc.f_91073_.m_6815_(ownerId.value) instanceof LivingEntity living) {
+      if (ownerId != null && mc.level.getEntity(ownerId.value) instanceof LivingEntity living) {
          livingEntity = living;
       }
 
       if (livingEntity == null) {
-         livingEntity = mc.f_91074_;
+         livingEntity = mc.player;
       }
 
-      poseStack.m_85836_();
+      poseStack.pushPose();
       if (context == ItemDisplayContext.GROUND) {
          GunRenderingHandler.get().applyWeaponScale(stack, poseStack);
       }
 
-      GunRenderingHandler.get().renderWeapon(livingEntity, stack, context, poseStack, source, light, Minecraft.m_91087_().m_91296_());
-      poseStack.m_85849_();
+      GunRenderingHandler.get().renderWeapon(livingEntity, stack, context, poseStack, source, light, Minecraft.getInstance().getPartialTick());
+      poseStack.popPose();
    }
 }

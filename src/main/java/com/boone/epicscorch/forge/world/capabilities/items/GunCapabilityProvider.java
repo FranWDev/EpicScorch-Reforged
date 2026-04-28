@@ -19,7 +19,7 @@ public class GunCapabilityProvider implements ICapabilityProvider, NonNullSuppli
    private final CapabilityItem capability;
 
    public GunCapabilityProvider(ItemStack itemStack) {
-      Item item = itemStack.m_41720_();
+      Item item = itemStack.getItem();
       if (item instanceof GunItem gunItem) {
          String gripType = String.valueOf(gunItem.getGun().getGeneral().getGripType(itemStack));
          System.out.println("GripType: " + gripType);

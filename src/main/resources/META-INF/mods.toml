@@ -1,14 +1,17 @@
-modLoader="javafml" # Specifies Forge Mod Loader
-loaderVersion="[47,)" # Requires Forge 1.20.1 or compatible version
-license="MIT" # Your license here
+modLoader="javafml" 
+loaderVersion="[47,)"
+license="GPLv3" 
 
 [[mods]]
-modId="epicscorch" # Your mod ID, must match @Mod annotation
-version="1.0.0" # Mod version
-displayName="Epic Scorch" # Display name
-authors="YourName" # Author name
+modId="epicscorch"
+version="1.0.0"
+displayName="Epic Scorch"
+authors="FranWDev (Updated from bakdpotato11 & hd42)"
 description='''
-This mod integrates Scorched Guns 2 with Epic Fight Mod.
+Unofficial update for Epic Scorch. 
+Original mod by bakdpotato11. 
+Based on animations/structure by hd42.
+Updated to the latest epicfight version by FranWDev.
 '''
 
 [[dependencies.epicscorch]]

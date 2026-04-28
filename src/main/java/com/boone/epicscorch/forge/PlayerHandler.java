@@ -15,7 +15,7 @@ public class PlayerHandler {
 
    @SubscribeEvent
    public static void onLogout(PlayerLoggedOutEvent event) {
-      preLivingMotions.remove(event.getEntity().m_20148_());
+      preLivingMotions.remove(event.getEntity().getUUID());
    }
 
    public static Map<UUID, LivingMotion> getPreLivingMotions() {

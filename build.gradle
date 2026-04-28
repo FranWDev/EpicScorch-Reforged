@@ -1,0 +1,61 @@
+plugins {
+    id 'net.neoforged.moddev.legacyforge' version '2.0.141'
+}
+
+group = mod_group_id
+version = mod_version
+
+base {
+    archivesName = 'epicscorch'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
+    
+    parchment {
+        mappingsVersion = '2023.09.03'
+        minecraftVersion = '1.20.1'
+    }
+
+    runs {
+        client {
+            client()
+        }
+    }
+}
+
+repositories {
+    maven {
+        url = "https://cursemaven.com"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    modImplementation project(':epicfight')
+    
+    modImplementation "curse.maven:scorched-guns-2-802940:7232063"
+    modImplementation "curse.maven:framework-549225:5911986"
+    modImplementation "curse.maven:geckolib-388172:5675221"
+    modImplementation "curse.maven:curios-309927:6418456"
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version: minecraft_version,
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_version: mod_version,
+            mod_authors: mod_authors,
+            mod_description: mod_description
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}

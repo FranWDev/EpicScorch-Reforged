@@ -1,0 +1,37 @@
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.metadata
+.classpath
+.project
+.settings/
+.factorypath
+
+# Visual Studio Code
+.vscode/
+
+# Minecraft / Forge / NeoForge
+run/
+logs/
+usercache.json
+usernamecache.json
+launcher_profiles.json
+moddev-mod.json
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+bin/

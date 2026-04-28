@@ -21,8 +21,8 @@ public class ClientPlayerHandler {
       AbstractClientPlayerPatch<?> playerPatch = event.getPlayerPatch();
       if (playerPatch.getOriginal() instanceof AbstractClientPlayer) {
          AbstractClientPlayer player = (AbstractClientPlayer)playerPatch.getOriginal();
-         if (player.m_21205_().m_41720_() instanceof GunItem && Boolean.TRUE.equals(ModSyncedDataKeys.AIMING.getValue(player))) {
-            PlayerHandler.getPreLivingMotions().put(player.m_20148_(), playerPatch.currentLivingMotion);
+         if (player.getMainHandItem().getItem() instanceof GunItem && Boolean.TRUE.equals(ModSyncedDataKeys.AIMING.getValue(player))) {
+            PlayerHandler.getPreLivingMotions().put(player.getUUID(), playerPatch.currentLivingMotion);
             playerPatch.currentLivingMotion = LivingMotions.AIM;
          }
       }
@@ -33,19 +33,19 @@ public class ClientPlayerHandler {
       AbstractClientPlayerPatch<?> playerPatch = event.getPlayerPatch();
       if (playerPatch.getOriginal() instanceof AbstractClientPlayer) {
          AbstractClientPlayer player = (AbstractClientPlayer)playerPatch.getOriginal();
-         LivingMotion preLivingMotion = PlayerHandler.getPreLivingMotions().get(player.m_20148_());
+         LivingMotion preLivingMotion = PlayerHandler.getPreLivingMotions().get(player.getUUID());
          if (preLivingMotion != null) {
             playerPatch.currentLivingMotion = preLivingMotion;
-            PlayerHandler.getPreLivingMotions().remove(player.m_20148_());
+            PlayerHandler.getPreLivingMotions().remove(player.getUUID());
          }
 
-         if (player.m_21205_().m_41720_() instanceof GunItem) {
+         if (player.getMainHandItem().getItem() instanceof GunItem) {
             if (Boolean.TRUE.equals(ModSyncedDataKeys.RELOADING.getValue(player))) {
                playerPatch.currentCompositeMotion = LivingMotions.RELOAD;
             } else if (Boolean.TRUE.equals(ModSyncedDataKeys.AIMING.getValue(player))) {
                playerPatch.currentCompositeMotion = LivingMotions.AIM;
             } else if (Boolean.TRUE.equals(ModSyncedDataKeys.SHOOTING.getValue(player))) {
-               playerPatch.getClientAnimator().playReboundAnimation();
+               playerPatch.getClientAnimator().playShootingAnimation();
             } else {
                playerPatch.currentCompositeMotion = playerPatch.currentLivingMotion;
             }

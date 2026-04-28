@@ -88,10 +88,10 @@ public class GunCapabilityPresets {
 
    @SubscribeEvent
    static void onWeaponCapabilityPresetRegister(WeaponCapabilityPresetRegistryEvent event) {
-      event.getTypeEntry().put(ResourceLocation.m_135820_("pistol"), PISTOL);
-      event.getTypeEntry().put(ResourceLocation.m_135820_("rifle"), RIFLE);
-      event.getTypeEntry().put(ResourceLocation.m_135820_("bazooka"), BAZOOKA);
-      event.getTypeEntry().put(ResourceLocation.m_135820_("mini_gun"), MINI_GUN);
-      event.getTypeEntry().put(ResourceLocation.m_135820_("grenade"), GRENADE);
+      event.getTypeEntry().put(ResourceLocation.parse("pistol"), PISTOL);
+      event.getTypeEntry().put(ResourceLocation.parse("rifle"), RIFLE);
+      event.getTypeEntry().put(ResourceLocation.parse("bazooka"), BAZOOKA);
+      event.getTypeEntry().put(ResourceLocation.parse("mini_gun"), MINI_GUN);
+      event.getTypeEntry().put(ResourceLocation.parse("grenade"), GRENADE);
    }
 }

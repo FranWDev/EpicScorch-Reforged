@@ -28,7 +28,7 @@ public class GunOwnerCapabilityProvider implements ICapabilityProvider {
 
    @SubscribeEvent
    public static void onAttachCapabilitiesToItemStack(AttachCapabilitiesEvent<ItemStack> event) {
-      if (((ItemStack)event.getObject()).m_41720_() instanceof GunItem) {
+      if (((ItemStack)event.getObject()).getItem() instanceof GunItem) {
          event.addCapability(new ResourceLocation("epiccompat_cgm", "owner_id"), new GunOwnerCapabilityProvider());
       }
    }
@@ -36,7 +36,7 @@ public class GunOwnerCapabilityProvider implements ICapabilityProvider {
    @SubscribeEvent
    public static void onLivingTick(LivingTickEvent event) {
       LivingEntity entity = event.getEntity();
-      entity.getCapability(ModCapabilities.OWNER_ID).ifPresent(cap -> cap.value = entity.m_19879_());
+      entity.getCapability(ModCapabilities.OWNER_ID).ifPresent(cap -> cap.value = entity.getId());
    }
 
    public static class OwnerId {
