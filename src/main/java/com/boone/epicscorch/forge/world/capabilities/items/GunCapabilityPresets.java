@@ -12,7 +12,7 @@ import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.world.capabilities.item.RangedWeaponCapability;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Builder;
 
-@EventBusSubscriber(modid = "epiccompat_cgm", bus = Bus.MOD)
+@EventBusSubscriber(modid = "epicscorch", bus = Bus.MOD)
 public class GunCapabilityPresets {
    public static final Function<Item, Builder> PISTOL = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_PISTOL)
@@ -31,6 +31,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_PISTOL_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_PISTOL)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_PISTOL_AIM);
+
    public static final Function<Item, Builder> RIFLE = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_RIFLE)
       .addAnimationsModifier(LivingMotions.KNEEL, Animations.BIPED_HOLD_RIFLE)
@@ -48,6 +49,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_RIFLE_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_RIFLE)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_RIFLE_AIM);
+
    public static final Function<Item, Builder> BAZOOKA = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_BAZOOKA)
       .addAnimationsModifier(LivingMotions.KNEEL, Animations.BIPED_HOLD_BAZOOKA)
@@ -65,6 +67,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_BAZOOKA_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_BAZOOKA)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_BAZOOKA_AIM);
+
    public static final Function<Item, Builder> MINI_GUN = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_MINI_GUN)
       .addAnimationsModifier(LivingMotions.KNEEL, Animations.BIPED_HOLD_MINI_GUN)
@@ -82,16 +85,17 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_MINI_GUN_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_MINI_GUN)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_MINI_GUN_AIM);
+
    public static final Function<Item, Builder> GRENADE = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_GRENADE_ARM)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_GRENADE_THROW);
 
    @SubscribeEvent
    static void onWeaponCapabilityPresetRegister(WeaponCapabilityPresetRegistryEvent event) {
-      event.getTypeEntry().put(ResourceLocation.parse("pistol"), PISTOL);
-      event.getTypeEntry().put(ResourceLocation.parse("rifle"), RIFLE);
-      event.getTypeEntry().put(ResourceLocation.parse("bazooka"), BAZOOKA);
-      event.getTypeEntry().put(ResourceLocation.parse("mini_gun"), MINI_GUN);
-      event.getTypeEntry().put(ResourceLocation.parse("grenade"), GRENADE);
+      event.getTypeEntry().put(new ResourceLocation("epicfight", "pistol"), PISTOL);
+      event.getTypeEntry().put(new ResourceLocation("epicfight", "rifle"), RIFLE);
+      event.getTypeEntry().put(new ResourceLocation("epicfight", "bazooka"), BAZOOKA);
+      event.getTypeEntry().put(new ResourceLocation("epicfight", "minigun"), MINI_GUN);
+      event.getTypeEntry().put(new ResourceLocation("epicfight", "grenade"), GRENADE);
    }
 }

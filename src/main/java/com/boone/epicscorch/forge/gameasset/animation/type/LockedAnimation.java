@@ -14,9 +14,11 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class LockedAnimation extends StaticAnimation {
-   public LockedAnimation(boolean repeatPlay, AnimationAccessor<? extends LockedAnimation> accessor, String path, AssetAccessor<? extends Armature> armature) {
-      super(repeatPlay, accessor, armature);
-      this.resourceLocation = accessor.registryName(); // In LockedAnimation it seems it was intended to use the path as registry name
+   private final String path;
+
+   public LockedAnimation(float transitionTime, boolean repeatPlay, AnimationAccessor<? extends LockedAnimation> accessor, String path, AssetAccessor<? extends Armature> armature) {
+      super(transitionTime, repeatPlay, accessor, armature);
+      this.path = path;
    }
 
    @Override

@@ -15,16 +15,23 @@ public class EpicScorch {
    public static final String MOD_ID = "epicscorch";
 
    public EpicScorch() {
+      System.out.println("###############################################");
+      System.out.println("EPIC SCORCH: MOD LOADING...");
+      System.out.println("###############################################");
+
       IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
       modEventBus.addListener(this::onCommonSetup);
+      
+      // Epic Fight Presets need the MOD bus
+      modEventBus.register(com.boone.epicscorch.forge.world.capabilities.items.GunCapabilityPresets.class);
+
       this.registerSharedEventListeners();
+      
       DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> com.boone.epicscorch.forge.client.ClientEventHandler::registerClient);
-      DistExecutor.safeRunWhenOn(Dist.DEDICATED_SERVER, () -> ServerEventHandler::registerServer);
-      System.out.println("EpicScorch Mod Loaded: Bridging Epic Fight and Scorched Guns 2!");
+      DistExecutor.safeRunWhenOn(Dist.DEDICATED_SERVER, () -> com.boone.epicscorch.forge.ServerEventHandler::registerServer);
    }
 
    private void onCommonSetup(FMLCommonSetupEvent event) {
-      System.out.println("Common setup for EpicScorch.");
    }
 
    private void registerSharedEventListeners() {

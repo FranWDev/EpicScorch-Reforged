@@ -20,10 +20,13 @@ public class ClientPlayerHandler {
    public static void onPlayerMotionBase(BaseLayer event) {
       AbstractClientPlayerPatch<?> playerPatch = event.getPlayerPatch();
       if (playerPatch.getOriginal() instanceof AbstractClientPlayer) {
-         AbstractClientPlayer player = (AbstractClientPlayer)playerPatch.getOriginal();
-         if (player.getMainHandItem().getItem() instanceof GunItem && Boolean.TRUE.equals(ModSyncedDataKeys.AIMING.getValue(player))) {
-            PlayerHandler.getPreLivingMotions().put(player.getUUID(), playerPatch.currentLivingMotion);
-            playerPatch.currentLivingMotion = LivingMotions.AIM;
+         AbstractClientPlayer player = (AbstractClientPlayer) playerPatch.getOriginal();
+         boolean isAiming = Boolean.TRUE.equals(ModSyncedDataKeys.AIMING.getValue(player));
+
+         if (player.getMainHandItem().getItem() instanceof GunItem) {
+            if (isAiming) {
+               playerPatch.currentLivingMotion = LivingMotions.AIM;
+            }
          }
       }
    }
@@ -32,7 +35,7 @@ public class ClientPlayerHandler {
    public static void onPlayerMotionComposite(CompositeLayer event) {
       AbstractClientPlayerPatch<?> playerPatch = event.getPlayerPatch();
       if (playerPatch.getOriginal() instanceof AbstractClientPlayer) {
-         AbstractClientPlayer player = (AbstractClientPlayer)playerPatch.getOriginal();
+         AbstractClientPlayer player = (AbstractClientPlayer) playerPatch.getOriginal();
          LivingMotion preLivingMotion = PlayerHandler.getPreLivingMotions().get(player.getUUID());
          if (preLivingMotion != null) {
             playerPatch.currentLivingMotion = preLivingMotion;

@@ -1,14 +1,16 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.boone.epicscorch.mixins",
+  "package": "com.boone.epicscorch.mixins.scg",
   "refmap": "epicscorch.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
   "client": [
     "GunItemStackRendererMixin",
-    "PlayerModelHandlerMixin"
+    "PlayerModelHandlerMixin",
+    "ControlEngineMixin",
+    "AbstractClientPlayerPatchMixin"
   ],
   "server": [],
   "injectors": {

@@ -7,6 +7,10 @@
   "mixins": [
   ],
   "client": [
+    "GunItemStackRendererMixin",
+    "PlayerModelHandlerMixin",
+    "ControlEngineMixin",
+    "AbstractClientPlayerPatchMixin"
   ],
   "injectors": {
     "defaultRequire": 1

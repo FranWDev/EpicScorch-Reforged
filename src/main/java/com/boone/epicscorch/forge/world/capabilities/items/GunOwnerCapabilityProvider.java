@@ -4,6 +4,7 @@ import com.boone.epicscorch.forge.ModCapabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -16,20 +17,29 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.ribs.scguns.item.GunItem;
+import top.ribs.scguns.item.GrenadeItem;
 
-@EventBusSubscriber(modid = "epiccompat_cgm", bus = Bus.FORGE)
+@EventBusSubscriber(modid = "epicscorch", bus = Bus.FORGE)
 public class GunOwnerCapabilityProvider implements ICapabilityProvider {
    private final LazyOptional<GunOwnerCapabilityProvider.OwnerId> id = LazyOptional.of(GunOwnerCapabilityProvider.OwnerId::new);
 
    @NotNull
+   @Override
    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
       return cap == ModCapabilities.OWNER_ID ? this.id.cast() : LazyOptional.empty();
    }
 
    @SubscribeEvent
    public static void onAttachCapabilitiesToItemStack(AttachCapabilitiesEvent<ItemStack> event) {
-      if (((ItemStack)event.getObject()).getItem() instanceof GunItem) {
-         event.addCapability(new ResourceLocation("epiccompat_cgm", "owner_id"), new GunOwnerCapabilityProvider());
+      ItemStack stack = event.getObject();
+      if (stack == null || stack.isEmpty()) return;
+      
+      Item item = stack.getItem();
+      if (item instanceof GunItem || item instanceof GrenadeItem) {
+          GunCapabilityProvider weaponProvider = new GunCapabilityProvider(stack);
+          if (weaponProvider.hasCapability()) {
+              event.addCapability(new ResourceLocation("epicscorch", "weapon_cap"), weaponProvider);
+          }
       }
    }
 

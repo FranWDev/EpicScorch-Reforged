@@ -18,8 +18,8 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class GunAimAnimation extends AimAnimation {
-   public GunAimAnimation(boolean repeatPlay, AnimationAccessor<? extends GunAimAnimation> accessor, String path1, String path2, String path3, String path4, AssetAccessor<? extends Armature> armature) {
-      super(repeatPlay, accessor, path1, path2, path3, path4, armature);
+   public GunAimAnimation(float transitionTime, boolean repeatPlay, AnimationAccessor<? extends AimAnimation> accessor, String path1, String path2, String path3, String path4, AssetAccessor<? extends Armature> armature) {
+      super(transitionTime, repeatPlay, accessor, path1, path2, path3, path4, armature);
    }
 
    @Override
