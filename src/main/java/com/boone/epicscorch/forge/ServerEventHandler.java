@@ -5,6 +5,6 @@ import net.minecraftforge.common.MinecraftForge;
 public class ServerEventHandler {
    public static void registerServer() {
       MinecraftForge.EVENT_BUS.register(ServerEventHandler.class);
-      System.out.println("Server-specific logic registered for EpicScorch.");
+
    }
 }

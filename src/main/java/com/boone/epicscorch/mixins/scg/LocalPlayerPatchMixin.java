@@ -22,7 +22,7 @@ public abstract class LocalPlayerPatchMixin {
         ItemStack stack = patch.getOriginal().getMainHandItem();
         
         if (stack.getItem() instanceof GunItem || AimingHandler.get().isAiming()) {
-            System.out.println("[EpicScorch-Debug] canPlayAttackAnimation forced FALSE for " + stack.getItem().toString());
+
             cir.setReturnValue(false);
         }
     }
@@ -35,7 +35,7 @@ public abstract class LocalPlayerPatchMixin {
         if (stack.getItem() instanceof GunItem) {
             StaticAnimation anim = animation.get();
             if (anim instanceof AttackAnimation) {
-                System.out.println("[EpicScorch-Debug] playAnimationSynchronized BLOCKED animation: " + anim.toString());
+
                 ci.cancel();
             }
         }

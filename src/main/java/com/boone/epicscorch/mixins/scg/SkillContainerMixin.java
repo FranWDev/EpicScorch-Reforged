@@ -22,7 +22,7 @@ public abstract class SkillContainerMixin {
         if (container.getSlot() == SkillSlots.BASIC_ATTACK) {
             ItemStack stack = executor.getOriginal().getMainHandItem();
             if (stack.getItem() instanceof GunItem) {
-                System.out.println("[EpicScorch-Debug] sendCastRequest BASIC_ATTACK BLOCKED");
+
                 cir.setReturnValue(new SkillCastEvent(executor, container, null));
             }
         }

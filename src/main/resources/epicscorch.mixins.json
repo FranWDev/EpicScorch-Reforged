@@ -14,7 +14,8 @@
     "LocalPlayerPatchMixin",
     "DiscreteInputActionTriggerMixin",
     "LocalPlayerSwingMixin",
-    "SkillContainerMixin"
+    "SkillContainerMixin",
+    "RenderEngineMixin"
   ],
   "injectors": {
     "defaultRequire": 1

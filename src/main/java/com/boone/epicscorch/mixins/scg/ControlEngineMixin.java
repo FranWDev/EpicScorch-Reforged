@@ -21,7 +21,7 @@ public abstract class ControlEngineMixin {
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
             if (stack.getItem() instanceof GunItem || AimingHandler.get().isAiming()) {
-                System.out.println("[EpicScorch-Debug] maybeAttack BLOCKED for " + stack.getItem().toString());
+
                 ci.cancel();
             }
         }
@@ -31,7 +31,7 @@ public abstract class ControlEngineMixin {
     private void handleSeparateWeaponInnateSkill(CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && player.getMainHandItem().getItem() instanceof GunItem) {
-            System.out.println("[EpicScorch-Debug] handleSeparateWeaponInnateSkill BLOCKED");
+
             ci.cancel();
         }
     }
@@ -48,19 +48,5 @@ public abstract class ControlEngineMixin {
         }
     }
 
-    /* 
-    // This is currently causing a crash because the method name isn't found in the runtime JAR.
-    // We'll re-enable it once we identify the correct target name.
-    @Inject(method = "onInteractionKeyMappingTriggered", at = @At("HEAD"), cancellable = true)
-    private void onInteractionKeyMappingTriggered(net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered event, CallbackInfo ci) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
-
-        ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() instanceof GunItem) {
-            System.out.println("[EpicScorch-Debug] onInteractionKeyMappingTriggered CANCELLED by EpicScorch");
-            ci.cancel();
-        }
-    }
-    */
 }
+

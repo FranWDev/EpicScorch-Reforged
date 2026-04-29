@@ -22,7 +22,7 @@ public abstract class CapabilityItemMixin {
         ItemStack stack = playerpatch.getOriginal().getMainHandItem();
         
         if (stack.getItem() instanceof GunItem) {
-            System.out.println("[EpicScorch-Debug] getAutoAttackMotion returning empty list for " + stack.getItem().toString());
+
             cir.setReturnValue(Lists.newArrayList());
         }
     }
