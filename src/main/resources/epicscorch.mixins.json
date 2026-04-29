@@ -15,7 +15,10 @@
     "DiscreteInputActionTriggerMixin",
     "LocalPlayerSwingMixin",
     "SkillContainerMixin",
-    "RenderEngineMixin"
+    "RenderEngineMixin",
+    "ShootingHandlerMixin",
+    "ItemInHandRendererAccessor",
+    "ReloadHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
