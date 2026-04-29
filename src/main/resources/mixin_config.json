@@ -9,8 +9,7 @@
   "client": [
     "GunItemStackRendererMixin",
     "PlayerModelHandlerMixin",
-    "ControlEngineMixin",
-    "AbstractClientPlayerPatchMixin"
+    "ControlEngineMixin"
   ],
   "server": [],
   "injectors": {

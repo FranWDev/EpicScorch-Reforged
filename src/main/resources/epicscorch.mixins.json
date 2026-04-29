@@ -5,12 +5,16 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "EpicScorch.refmap.json",
   "mixins": [
+    "CapabilityItemMixin"
   ],
   "client": [
     "GunItemStackRendererMixin",
     "PlayerModelHandlerMixin",
     "ControlEngineMixin",
-    "AbstractClientPlayerPatchMixin"
+    "LocalPlayerPatchMixin",
+    "DiscreteInputActionTriggerMixin",
+    "LocalPlayerSwingMixin",
+    "SkillContainerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

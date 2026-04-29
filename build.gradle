@@ -59,3 +59,11 @@ tasks.named('processResources', ProcessResources).configure {
         expand replaceProperties + [project: project]
     }
 }
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+            "MixinConfigs": "epicscorch.mixins.json"
+        ])
+    }
+}

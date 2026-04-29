@@ -15,10 +15,6 @@ public class EpicScorch {
    public static final String MOD_ID = "epicscorch";
 
    public EpicScorch() {
-      System.out.println("###############################################");
-      System.out.println("EPIC SCORCH: MOD LOADING...");
-      System.out.println("###############################################");
-
       IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
       modEventBus.addListener(this::onCommonSetup);
       
