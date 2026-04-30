@@ -22,6 +22,7 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import java.util.Map;
 import org.spongepowered.asm.mixin.Shadow;
+import com.boone.epicscorch.config.EpicScorchConfig;
 
 @Mixin(ReloadTracker.class)
 public abstract class ReloadTrackerMotionBlockMixin {
@@ -40,16 +41,25 @@ public abstract class ReloadTrackerMotionBlockMixin {
         if (!(event.player instanceof ServerPlayer)) return;
 
         ServerPlayer player = (ServerPlayer) event.player;
-        boolean shouldBlock = player.isSprinting();
+        boolean shouldBlock = false;
 
-        if (!shouldBlock) {
-            try {
-                PlayerPatch<?> patch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
-                if (patch != null && patch.isEpicFightMode()) {
-                    EntityState state = patch.getEntityState();
-                    if (state.inaction()) shouldBlock = true;
-                }
-            } catch (Exception e) {}
+        if (EpicScorchConfig.CANCEL_RELOAD_ON_ACTION.get()) {
+            boolean isReloading = ModSyncedDataKeys.RELOADING.getValue(player);
+            if (isReloading && player.isSprinting()) {
+                player.setSprinting(false);
+            }
+            
+            shouldBlock = player.isSprinting();
+
+            if (!shouldBlock) {
+                try {
+                    PlayerPatch<?> patch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
+                    if (patch != null && patch.isEpicFightMode()) {
+                        EntityState state = patch.getEntityState();
+                        if (state.inaction()) shouldBlock = true;
+                    }
+                } catch (Exception e) {}
+            }
         }
 
         ItemStack heldItem = player.getMainHandItem();

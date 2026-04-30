@@ -31,7 +31,7 @@ public abstract class ShootingHandlerMixin {
     private void epicscorch$preventFireBasedOnState(Player player, ItemStack stack,
             CallbackInfoReturnable<Boolean> cir) {
 
-        boolean inAir = !player.onGround() && Math.abs(player.getDeltaMovement().y) > 0.01;
+        boolean inAir = !player.onGround() && !player.isInWater() && Math.abs(player.getDeltaMovement().y) > 0.01;
         if (inAir && !player.getAbilities().flying) {
             cir.setReturnValue(false);
             return;

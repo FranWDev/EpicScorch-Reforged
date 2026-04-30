@@ -19,7 +19,8 @@
     "RenderEngineMixin",
     "ShootingHandlerMixin",
     "ItemInHandRendererAccessor",
-    "AimingHandlerMixin"
+    "AimingHandlerMixin",
+    "EpicFightCameraAPIMixin"
   ],
   "server": [
     "ReloadTrackerMixin",

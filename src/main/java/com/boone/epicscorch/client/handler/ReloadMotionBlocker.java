@@ -13,6 +13,7 @@ import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import com.boone.epicscorch.config.EpicScorchConfig;
 
 @Mod.EventBusSubscriber(modid = "epicscorch", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ReloadMotionBlocker {
@@ -32,13 +33,21 @@ public class ReloadMotionBlocker {
             return;
         }
 
-        boolean isSprinting = player.isSprinting() || mc.options.keySprint.isDown();
-        LocalPlayerPatch playerPatch = ClientEngine.getInstance().getPlayerPatch();
+        boolean isSprinting = false;
         boolean isInaction = false;
+        LocalPlayerPatch playerPatch = ClientEngine.getInstance().getPlayerPatch();
 
-        if (playerPatch != null && playerPatch.isEpicFightMode()) {
-            EntityState state = playerPatch.getEntityState();
-            isInaction = state.inaction();
+        if (EpicScorchConfig.CANCEL_RELOAD_ON_ACTION.get()) {
+            boolean isReloading = ModSyncedDataKeys.RELOADING.getValue(player);
+            if (isReloading && player.isSprinting()) {
+                player.setSprinting(false);
+            }
+
+            isSprinting = player.isSprinting() || mc.options.keySprint.isDown();
+            if (playerPatch != null && playerPatch.isEpicFightMode()) {
+                EntityState state = playerPatch.getEntityState();
+                isInaction = state.inaction();
+            }
         }
 
         if ((isSprinting && !wasSprinting) || (isInaction && !wasInaction)) {
