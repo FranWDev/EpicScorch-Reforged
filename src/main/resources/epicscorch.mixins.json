@@ -19,7 +19,6 @@
     "RenderEngineMixin",
     "ShootingHandlerMixin",
     "ItemInHandRendererAccessor",
-    "ReloadHandlerMixin",
     "AimingHandlerMixin"
   ],
   "server": [
