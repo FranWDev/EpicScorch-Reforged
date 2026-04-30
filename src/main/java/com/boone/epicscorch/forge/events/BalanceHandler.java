@@ -15,6 +15,7 @@ import top.ribs.scguns.network.message.C2SMessageAim;
 
 @Mod.EventBusSubscriber(modid = "epicscorch", value = Dist.CLIENT)
 public class BalanceHandler {
+    private static double lastPlayerY = 0;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -26,6 +27,15 @@ public class BalanceHandler {
 
         boolean isAiming = AimingHandler.get().isAiming();
         boolean isReloading = ReloadHandler.get().getReloadTimer() > 0;
+
+        // Check if player is airborne (jumping/falling)
+        boolean isAirborne = !player.onGround() && Math.abs(player.getDeltaMovement().y) > 0.01;
+        
+        // Cancel aiming if player jumps/becomes airborne
+        if (isAiming && isAirborne) {
+            // System.out.println("[EpicScorch-Debug] Cancelled AIM: Player airborne");
+            cancelAiming(player);
+        }
 
         if (isAiming || isReloading) {
             // Block sprinting if aiming or reloading
@@ -41,6 +51,16 @@ public class BalanceHandler {
                 cancelAimAndReload(player);
             }
         }
+
+        lastPlayerY = player.getY();
+    }
+
+    private static void cancelAiming(LocalPlayer player) {
+        if (AimingHandler.get().isAiming()) {
+            AimingHandler.get().aiming = false;
+            ModSyncedDataKeys.AIMING.setValue(player, false);
+            PacketHandler.getPlayChannel().sendToServer(new C2SMessageAim(false));
+        }
     }
 
     private static void cancelAimAndReload(LocalPlayer player) {
@@ -48,10 +68,6 @@ public class BalanceHandler {
             ReloadHandler.get().setReloading(false);
         }
 
-        if (AimingHandler.get().isAiming()) {
-            AimingHandler.get().aiming = false;
-            ModSyncedDataKeys.AIMING.setValue(player, false);
-            PacketHandler.getPlayChannel().sendToServer(new C2SMessageAim(false));
-        }
+        cancelAiming(player);
     }
 }

@@ -12,6 +12,9 @@ import top.ribs.scguns.client.handler.AimingHandler;
 import top.ribs.scguns.item.GunItem;
 import yesman.epicfight.client.events.engine.ControlEngine;
 
+/**
+ * Prevents Epic Fight's combat actions from interfering with gun firing.
+ */
 @Mixin(value = ControlEngine.class, remap = false)
 public abstract class ControlEngineMixin {
 
@@ -20,8 +23,8 @@ public abstract class ControlEngineMixin {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
+            // Bloquea cualquier intento de ataque de Epic Fight si se sostiene un arma
             if (stack.getItem() instanceof GunItem || AimingHandler.get().isAiming()) {
-
                 ci.cancel();
             }
         }
@@ -31,7 +34,6 @@ public abstract class ControlEngineMixin {
     private void handleSeparateWeaponInnateSkill(CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && player.getMainHandItem().getItem() instanceof GunItem) {
-
             ci.cancel();
         }
     }
@@ -42,11 +44,9 @@ public abstract class ControlEngineMixin {
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
             if (stack.getItem() instanceof GunItem || AimingHandler.get().isAiming()) {
-                // We return FALSE to let vanilla clicks pass through to SCGuns
                 cir.setReturnValue(false);
             }
         }
     }
-
 }
 

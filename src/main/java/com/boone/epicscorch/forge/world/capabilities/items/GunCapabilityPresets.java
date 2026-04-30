@@ -83,8 +83,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.CREATIVE_IDLE, Animations.BIPED_HOLD_MINI_GUN)
       .addAnimationsModifier(LivingMotions.FALL, Animations.BIPED_HOLD_MINI_GUN)
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_MINI_GUN_RELOAD)
-      .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_MINI_GUN)
-      .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_MINI_GUN_AIM);
+      .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_MINI_GUN);
 
    public static final Function<Item, Builder> GRENADE = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_GRENADE_ARM)

@@ -39,7 +39,6 @@ public class Animations {
    public static AnimationAccessor<GunMoveAnimation> BIPED_WALK_MINI_GUN;
    public static AnimationAccessor<GunMoveAnimation> BIPED_RUN_MINI_GUN;
    public static AnimationAccessor<GunMoveAnimation> BIPED_SNEAK_MINI_GUN;
-   public static AnimationAccessor<GunAimAnimation> BIPED_MINI_GUN_AIM;
    public static AnimationAccessor<LockedAnimation> BIPED_MINI_GUN_RELOAD;
    public static AnimationAccessor<GunAimAnimation> BIPED_GRENADE_ARM;
    public static AnimationAccessor<ReboundAnimation> BIPED_GRENADE_THROW;
@@ -114,9 +113,6 @@ public class Animations {
       ));
       BIPED_SNEAK_MINI_GUN = builder.nextAccessor("biped/living/sneak_mini_gun", (accessor) -> new GunMoveAnimation(
          0.05f, true, accessor, "biped/living/sneak_mini_gun_mid", "biped/living/hold_mini_gun_up", "biped/living/hold_mini_gun_down", "biped/living/hold_mini_gun_up", bipedArmature
-      ));
-      BIPED_MINI_GUN_AIM = builder.nextAccessor("biped/combat/mini_gun_aim", (accessor) -> new GunAimAnimation(
-         0.05f, true, accessor, "biped/combat/mini_gun_aim_mid", "biped/combat/mini_gun_aim_up", "biped/combat/mini_gun_aim_down", "biped/combat/mini_gun_aim_up", bipedArmature
       ));
       BIPED_MINI_GUN_RELOAD = builder.nextAccessor("biped/combat/mini_gun_reload", (accessor) -> new LockedAnimation(0.05f, true, accessor, "biped/combat/mini_gun_reload", bipedArmature));
       

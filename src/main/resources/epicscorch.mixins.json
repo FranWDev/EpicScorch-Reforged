@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "EpicScorch.refmap.json",
   "mixins": [
-    "CapabilityItemMixin"
+    "CapabilityItemMixin",
+    "ReloadTrackerMixin"
   ],
   "client": [
     "GunItemStackRendererMixin",
@@ -18,7 +19,13 @@
     "RenderEngineMixin",
     "ShootingHandlerMixin",
     "ItemInHandRendererAccessor",
-    "ReloadHandlerMixin"
+    "ReloadHandlerMixin",
+    "AimingHandlerMixin"
+  ],
+  "server": [
+    "ReloadTrackerMixin",
+    "ReloadTrackerMotionBlockMixin",
+    "C2SMessageGunLoadedMixin"
   ],
   "injectors": {
     "defaultRequire": 1

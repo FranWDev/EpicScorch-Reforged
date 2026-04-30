@@ -13,6 +13,9 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 
+/**
+ * Prevents Epic Fight from playing attack animations when holding guns.
+ */
 @Mixin(value = LocalPlayerPatch.class, remap = false)
 public abstract class LocalPlayerPatchMixin {
 
@@ -22,7 +25,6 @@ public abstract class LocalPlayerPatchMixin {
         ItemStack stack = patch.getOriginal().getMainHandItem();
         
         if (stack.getItem() instanceof GunItem || AimingHandler.get().isAiming()) {
-
             cir.setReturnValue(false);
         }
     }
@@ -35,7 +37,6 @@ public abstract class LocalPlayerPatchMixin {
         if (stack.getItem() instanceof GunItem) {
             StaticAnimation anim = animation.get();
             if (anim instanceof AttackAnimation) {
-
                 ci.cancel();
             }
         }

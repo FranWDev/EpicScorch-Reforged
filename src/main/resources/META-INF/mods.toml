@@ -6,12 +6,12 @@ license="GPLv3"
 modId="epicscorch"
 version="1.0.0"
 displayName="Epic Scorch"
-authors="FranWDev (Updated from bakdpotato11 & hd42)"
+authors="FranWDev (Reforged from bakdpotato11 & hd42)"
 description='''
-Unofficial update for Epic Scorch. 
+Unofficial reforge for Epic Scorch. 
 Original mod by bakdpotato11. 
 Based on animations/structure by hd42.
-Updated to the latest epicfight version by FranWDev.
+Reforged to the latest epicfight version by FranWDev.
 '''
 
 [[dependencies.epicscorch]]
