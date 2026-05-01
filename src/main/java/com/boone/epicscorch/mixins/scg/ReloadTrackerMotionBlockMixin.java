@@ -45,9 +45,7 @@ public abstract class ReloadTrackerMotionBlockMixin {
 
         if (EpicScorchConfig.CANCEL_RELOAD_ON_ACTION.get()) {
             boolean isReloading = ModSyncedDataKeys.RELOADING.getValue(player);
-            if (isReloading && player.isSprinting()) {
-                player.setSprinting(false);
-            }
+            // Do not forcibly disable sprint on server when reloading; just block reload progression if needed
             
             shouldBlock = player.isSprinting();
 
@@ -83,6 +81,10 @@ public abstract class ReloadTrackerMotionBlockMixin {
                 tag.remove("scguns:ReloadComplete");
                 tag.remove("scguns:ReloadState");
                 tag.remove("scguns:IsPlayingReloadStop");
+            }
+            
+            if (RELOAD_TRACKER_MAP != null) {
+                RELOAD_TRACKER_MAP.remove(player);
             }
             
             ci.cancel();

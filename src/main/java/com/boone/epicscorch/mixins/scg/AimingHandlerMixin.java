@@ -1,5 +1,7 @@
 package com.boone.epicscorch.mixins.scg;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.event.TickEvent;
@@ -16,6 +18,8 @@ import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerP
 import top.ribs.scguns.client.handler.ReloadHandler;
 import top.ribs.scguns.client.network.ClientPlayHandler;
 import top.ribs.scguns.init.ModSyncedDataKeys;
+import top.ribs.scguns.network.PacketHandler;
+import top.ribs.scguns.network.message.C2SMessageReload;
 import top.ribs.scguns.item.GunItem;
 import top.ribs.scguns.item.animated.AnimatedGunItem;
 import top.ribs.scguns.common.Gun;
@@ -37,10 +41,9 @@ public abstract class AimingHandlerMixin {
 
     @Unique
     private static boolean epicscorch$wasInaction = false;
+    @Unique
+    private static final Map<Long, Long> epicscorch$lastAnimReset = new HashMap<>();
 
-    /**
-     * Early check: prevent aiming if in dodge/roll at method start.
-     */
     @Inject(method = "onClientTick", at = @At("HEAD"), cancellable = true)
     private void epicscorch$cancelAimingOnDodgeStart(TickEvent.ClientTickEvent event, CallbackInfo ci) {
         if (event.phase != TickEvent.Phase.START) return;
@@ -49,14 +52,13 @@ public abstract class AimingHandlerMixin {
         LocalPlayer player = mc.player;
         if (player == null) return;
         
-        // --- RELOAD BLOCKING LOGIC ---
         boolean reloading = ModSyncedDataKeys.RELOADING.getValue(player);
         boolean restricted = false;
         
         LocalPlayerPatch playerPatch = ClientEngine.getInstance().getPlayerPatch();
         
         if (EpicScorchConfig.CANCEL_RELOAD_ON_ACTION.get()) {
-            restricted = player.isSprinting() || mc.options.keySprint.isDown();
+            restricted = player.isSprinting();
             
             if (playerPatch != null && playerPatch.isEpicFightMode()) {
                 EntityState state = playerPatch.getEntityState();
@@ -80,21 +82,33 @@ public abstract class AimingHandlerMixin {
             if (restricted || (!reloading && hasReloadTags)) {
                 if (reloading) {
                     ModSyncedDataKeys.RELOADING.setValue(player, false);
-                    ReloadHandler.get().setReloading(false);
+                    PacketHandler.getPlayChannel().sendToServer(new C2SMessageReload(false));
+
+                    if (heldItem.getItem() instanceof GunItem) {
+                        ReloadHandler.get().setReloading(false);
+                    }
                 }
 
                 boolean isManual = gun.getReloads().getReloadType() == ReloadType.MANUAL;
                 boolean isAimingNow = this.aiming;
 
-                // Force reset GeckoLib state to prevent animation blending/stuttering
-                if (heldItem.getItem() instanceof AnimatedGunItem animated) {
+                boolean isDrawing = tag.getBoolean("IsDrawing") && tag.getInt("DrawnTick") < 15;
+                if (!isDrawing && heldItem.getItem() instanceof AnimatedGunItem animated) {
                     animated.cleanupReloadState(tag);
                     try {
                         long id = GeoItem.getId(heldItem);
-                        AnimationController<?> controller = animated.getAnimatableInstanceCache().getManagerForId(id).getAnimationControllers().get("controller");
-                        if (controller != null) {
-                            controller.forceAnimationReset();
-                            controller.tryTriggerAnimation(animated.isInCarbineMode(heldItem) ? "carbine_idle" : "idle");
+                        long now = 0L;
+                        try {
+                            now = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : System.currentTimeMillis()/50L;
+                        } catch (Exception e) { now = System.currentTimeMillis()/50L; }
+                        Long last = epicscorch$lastAnimReset.getOrDefault(id, 0L);
+                        if (now - last >= 6L) {
+                            AnimationController<?> controller = animated.getAnimatableInstanceCache().getManagerForId(id).getAnimationControllers().get("controller");
+                            if (controller != null) {
+                                controller.forceAnimationReset();
+                                controller.tryTriggerAnimation(animated.isInCarbineMode(heldItem) ? "carbine_idle" : "idle");
+                                epicscorch$lastAnimReset.put(id, now);
+                            }
                         }
                     } catch (Exception e) {}
                 }
@@ -103,7 +117,6 @@ public abstract class AimingHandlerMixin {
                     try { ClientPlayHandler.handleStopReload(null); } catch (Exception e) {}
                 }
 
-                // Exhaustive cleanup of NBT state tags
                 tag.remove("InCriticalReloadPhase");
                 tag.remove("IsReloading");
                 tag.remove("scguns:IsReloading");
@@ -116,9 +129,8 @@ public abstract class AimingHandlerMixin {
             }
         }
 
-        // Cancel if sprinting or dodging
         if (EpicScorchConfig.CANCEL_AIM_ON_ACTION.get()) {
-            if (player.isSprinting() || mc.options.keySprint.isDown()) {
+            if (player.isSprinting()) {
                 this.aiming = false;
                 return;
             }
@@ -133,9 +145,6 @@ public abstract class AimingHandlerMixin {
         }
     }
 
-    /**
-     * Block aiming if player is sprinting, rolling, or holding sprint key.
-     */
     @Inject(
         method = "onClientTick",
         at = @At(value = "FIELD", target = "Ltop/ribs/scguns/client/handler/AimingHandler;aiming:Z", ordinal = 2, shift = At.Shift.AFTER),
@@ -145,7 +154,6 @@ public abstract class AimingHandlerMixin {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null) {
-            // Force aiming to false if the gun cannot ADS
             ItemStack heldItem = player.getMainHandItem();
             if (heldItem.getItem() instanceof GunItem gunItem) {
                 Gun gun = gunItem.getModifiedGun(heldItem);
@@ -155,19 +163,16 @@ public abstract class AimingHandlerMixin {
             }
 
             if (EpicScorchConfig.CANCEL_AIM_ON_ACTION.get()) {
-                // Cancel aiming during sprint
-                if (player.isSprinting() || mc.options.keySprint.isDown()) {
+                if (player.isSprinting()) {
                     this.aiming = false;
                     return;
                 }
-                
-                // Cancel aiming during dodge/roll
+
                 LocalPlayerPatch playerPatch = ClientEngine.getInstance().getPlayerPatch();
                 if (playerPatch != null && playerPatch.isEpicFightMode()) {
                     EntityState state = playerPatch.getEntityState();
                     boolean isInaction = state.inaction();
-                    
-                    // Cancel aiming if dodge just started or currently dodging
+
                     if (isInaction) {
                         this.aiming = false;
                     }

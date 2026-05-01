@@ -38,7 +38,6 @@ public class AbstractClientPlayerPatchMixin {
         ItemStack stack = player.getMainHandItem();
         UUID id = player.getUUID();
 
-        // Safety check: Only apply these overrides if holding a Scorched Gun
         if (!(stack.getItem() instanceof GunItem)) {
             aimHoldCounters.remove(id);
             return;
@@ -46,10 +45,13 @@ public class AbstractClientPlayerPatchMixin {
         
         boolean aiming = isActuallyAiming(player);
         boolean reloading = isActuallyReloading(player);
+        boolean stoppingReload = isStoppingReload(stack);
 
-        // Priority 1: AIM
-        // We now check if the gun is currently being "drawn" (equipped). 
-        // SCGuns prevents aiming for the first 15 ticks after switching to a gun.
+        if (stoppingReload) {
+            event.setMotion(LivingMotions.IDLE);
+            return;
+        }
+
         if (aiming && !isDrawingWeapon(player)) {
             aimHoldCounters.put(id, AIM_LEAVE_HYSTERESIS);
             event.setMotion(LivingMotions.AIM);
@@ -63,7 +65,6 @@ public class AbstractClientPlayerPatchMixin {
             return;
         }
 
-        // Priority 2: RELOAD
         if (reloading) {
             event.setMotion(LivingMotions.RELOAD);
             handleReloadLooping(player, event);
@@ -85,7 +86,6 @@ public class AbstractClientPlayerPatchMixin {
                 CompoundTag tag = stack.getOrCreateTag();
                 String reloadState = tag.getString("scguns:ReloadState");
                 
-                // Only loop if it's a multi-bullet manual reload (Manual guns use LOADING state for the loop)
                 if (reloadState.equals("RELOAD") || reloadState.equals("LOADING")) {
                     animator.playAnimation(reloadAnimAsset, 0.0F);
                 } else if (ModSyncedDataKeys.RELOADING.getValue(player)) {
@@ -96,7 +96,6 @@ public class AbstractClientPlayerPatchMixin {
     }
 
     private static boolean isActuallyAiming(AbstractClientPlayer player) {
-        // Direct key check for local player to ensure we catch the intent
         if (player.isLocalPlayer()) {
             if (KeyBinds.getAimMapping().isDown()) return true;
         }
@@ -110,14 +109,26 @@ public class AbstractClientPlayerPatchMixin {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return false;
 
+        CompoundTag tag = stack.getOrCreateTag();
+        if (isStoppingReload(stack)) return false;
+
         if (ModSyncedDataKeys.RELOADING.getValue(player)) return true;
 
-        CompoundTag tag = stack.getOrCreateTag();
         String reloadState = tag.getString("scguns:ReloadState");
         
-        // Expanded to cover all Scorched Guns 2 manual reload states
         return (reloadState.equals("RELOAD") || reloadState.equals("START") || 
                 reloadState.equals("STARTING") || reloadState.equals("LOADING"));
+    }
+
+    private static boolean isStoppingReload(ItemStack stack) {
+        if (!(stack.getItem() instanceof GunItem)) return false;
+
+        CompoundTag tag = stack.getOrCreateTag();
+        return tag.getBoolean("scguns:IsPlayingReloadStop")
+                || "STOP".equals(tag.getString("scguns:ReloadState"))
+                || "STOPPING".equals(tag.getString("scguns:ReloadState"))
+                || "STOP".equals(tag.getString("scguns:AnimationReloadState"))
+                || "STOPPING".equals(tag.getString("scguns:AnimationReloadState"));
     }
 
     private static boolean isDrawingWeapon(AbstractClientPlayer player) {
@@ -125,7 +136,6 @@ public class AbstractClientPlayerPatchMixin {
         if (!(stack.getItem() instanceof GunItem)) return false;
         
         CompoundTag tag = stack.getOrCreateTag();
-        // SCGuns uses DrawnTick (up to 15) to prevent aiming while the "draw" animation would be playing.
         return tag.getBoolean("IsDrawing") && tag.getInt("DrawnTick") < 15;
     }
 }
