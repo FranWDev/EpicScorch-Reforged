@@ -19,6 +19,7 @@
     "RenderEngineMixin",
     "ShootingHandlerMixin",
     "ItemInHandRendererAccessor",
+    "AimingHandlerAccessor",
     "AimingHandlerMixin",
     "EpicFightCameraAPIMixin",
     "ReloadHandlerMixin"

@@ -12,9 +12,35 @@ import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import com.boone.epicscorch.config.EpicScorchConfig;
+import com.boone.epicscorch.forge.events.BalanceHandler;
+import net.minecraftforge.event.TickEvent;
+import org.spongepowered.asm.mixin.Shadow;
+import top.ribs.scguns.init.ModSyncedDataKeys;
+import net.minecraft.client.KeyMapping;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import top.ribs.scguns.client.KeyBinds;
 
 @Mixin(value = ReloadHandler.class, remap = false)
 public abstract class ReloadHandlerMixin {
+    private static final KeyMapping DUMMY_MAPPING = new KeyMapping("epicscorch.dummy", -1, "key.categories.scguns") {
+        @Override
+        public boolean isDown() {
+            return false;
+        }
+    };
+
+
+
+    @Redirect(method = "onMouseInput(Lnet/minecraftforge/client/event/InputEvent$MouseButton;)V", 
+              at = @At(value = "INVOKE", target = "Ltop/ribs/scguns/client/KeyBinds;getAimMapping()Lnet/minecraft/client/KeyMapping;", remap = false))
+    private KeyMapping epicscorch$getAimMappingMouse() {
+        if (BalanceHandler.shouldBlockAiming(Minecraft.getInstance().player)) {
+            return DUMMY_MAPPING;
+        }
+        return KeyBinds.getAimMapping();
+    }
+
+
 
     @Inject(method = "onKeyPressed", at = @At("HEAD"), cancellable = true)
     private void epicscorch$blockReloadStart(InputEvent.Key event, CallbackInfo ci) {
@@ -24,17 +50,15 @@ public abstract class ReloadHandlerMixin {
         LocalPlayer player = mc.player;
         if (player == null) return;
 
-        if (player.isSprinting()) {
+        // Use the centralized restriction check
+        if (BalanceHandler.shouldBlockReloading(player)) {
             ci.cancel();
-            return;
         }
+    }
 
-        LocalPlayerPatch playerPatch = ClientEngine.getInstance().getPlayerPatch();
-        if (playerPatch != null && playerPatch.isEpicFightMode()) {
-            EntityState state = playerPatch.getEntityState();
-            if (state.inaction() || !state.canUseSkill()) {
-                ci.cancel();
-            }
-        }
+    @Inject(method = "onClientTick(Lnet/minecraftforge/event/TickEvent$ClientTickEvent;)V", at = @At("HEAD"))
+    private void epicscorch$onClientTickHead(TickEvent.ClientTickEvent event, CallbackInfo ci) {
+        // No longer calling setReloading(false) here to avoid premature tag cleanup.
+        // Input is blocked via Redirect in AimingHandlerMixin and logic is handled in BalanceHandler.
     }
 }

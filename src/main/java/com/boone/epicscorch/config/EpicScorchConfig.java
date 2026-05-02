@@ -18,6 +18,7 @@ public class EpicScorchConfig {
     public static final ForgeConfigSpec.BooleanValue DISABLE_LOCK_ON;
     public static final ForgeConfigSpec.BooleanValue CANCEL_RELOAD_ON_ACTION;
     public static final ForgeConfigSpec.BooleanValue CANCEL_AIM_ON_ACTION;
+    public static final ForgeConfigSpec.BooleanValue FORCE_CANCEL_AIM_WHILE_SPRINTING;
     public static final ForgeConfigSpec.IntValue STAMINA_REGEN_DELAY;
 
     static {
@@ -48,8 +49,12 @@ public class EpicScorchConfig {
                 .define("cancelReloadOnAction", true);
 
         CANCEL_AIM_ON_ACTION = builder
-                .comment("Cancels weapon aiming if the player sprints or performs Epic Fight actions")
+                .comment("Cancels weapon aiming if the player performs Epic Fight actions (dodging, attacking, etc.)")
                 .define("cancelAimOnAction", true);
+
+        FORCE_CANCEL_AIM_WHILE_SPRINTING = builder
+                .comment("Forces aiming to stop if the sprint key is held, preventing the mechanic where you can aim while running if you started aiming first.")
+                .define("forceCancelAimWhileSprinting", true);
 
         STAMINA_REGEN_DELAY = builder
                 .comment("Delay (in ticks) before stamina starts regenerating after firing (20 ticks = 1 second). Default: 30 (1.5s)")
