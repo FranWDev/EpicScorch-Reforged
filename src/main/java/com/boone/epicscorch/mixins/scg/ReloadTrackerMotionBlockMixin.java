@@ -45,18 +45,13 @@ public abstract class ReloadTrackerMotionBlockMixin {
 
         if (EpicScorchConfig.CANCEL_RELOAD_ON_ACTION.get()) {
             boolean isReloading = ModSyncedDataKeys.RELOADING.getValue(player);
-            // Do not forcibly disable sprint on server when reloading; just block reload progression if needed
+            // Block reload progression instead of disabling sprint to maintain movement fluidness
             
             shouldBlock = player.isSprinting();
-
-            if (!shouldBlock) {
-                try {
-                    PlayerPatch<?> patch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
-                    if (patch != null && patch.isEpicFightMode()) {
-                        EntityState state = patch.getEntityState();
-                        if (state.inaction()) shouldBlock = true;
-                    }
-                } catch (Exception e) {}
+            
+            // Do not block reload if jumping/airborne (fulfills user request)
+            if (!player.onGround()) {
+                shouldBlock = false;
             }
         }
 
@@ -69,18 +64,29 @@ public abstract class ReloadTrackerMotionBlockMixin {
 
         if (shouldBlock && (ModSyncedDataKeys.RELOADING.getValue(player) || hasReloadTag)) {
             ModSyncedDataKeys.RELOADING.setValue(player, false);
+            ModSyncedDataKeys.AIMING.setValue(player, false);
             
             if (heldItem.getItem() instanceof GunItem gunItem) {
                 CompoundTag tag = heldItem.getOrCreateTag();
-                // Atomic cleanup of reload NBT state to ensure immediate transition to idle/aim
-                tag.remove("IsReloading");
-                tag.remove("scguns:IsReloading");
-                tag.remove("InReloadLoop");
-                tag.remove("InCriticalReloadPhase");
-                tag.remove("IsManualReload");
+                
+                if (gunItem instanceof AnimatedGunItem animated) {
+                    animated.cleanupReloadState(tag);
+                }
+                
+                tag.remove("ReloadComplete");
                 tag.remove("scguns:ReloadComplete");
-                tag.remove("scguns:ReloadState");
+                // Use the flag that ReloadTracker.onPlayerTick() checks on the server
+                // (line 375 of ReloadTracker.java) to break the reload loop cleanly.
+                // Previously we only set ReloadState="IDLE" which the server ignores.
+                tag.putBoolean("scguns:PausedDuringReload", true);
+                tag.putString("scguns:ReloadState", "IDLE");
                 tag.remove("scguns:IsPlayingReloadStop");
+                tag.remove("Reloading");
+                tag.remove("scguns:Reloading");
+                tag.remove("scguns:ShouldStopAfterLoop"); // The special loop tag
+                
+                // Notify client to stop reload visually and logically
+                PacketHandler.getPlayChannel().sendToPlayer(() -> player, new S2CMessageStopReload());
             }
             
             if (RELOAD_TRACKER_MAP != null) {

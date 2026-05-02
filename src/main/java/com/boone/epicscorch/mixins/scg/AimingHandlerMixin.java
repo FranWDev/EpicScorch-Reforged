@@ -13,6 +13,7 @@ import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import top.ribs.scguns.client.KeyBinds;
 import com.boone.epicscorch.forge.events.BalanceHandler;
+import com.boone.epicscorch.mixins.scg.AimingHandlerAccessor;
 
 @Mixin(value = AimingHandler.class, remap = false)
 public abstract class AimingHandlerMixin {
@@ -35,16 +36,27 @@ public abstract class AimingHandlerMixin {
         return KeyBinds.getAimMapping();
     }
 
-    @Inject(method = "onClientTick(Lnet/minecraftforge/event/TickEvent$ClientTickEvent;)V", at = @At("HEAD"))
+    @Inject(method = "onClientTick(Lnet/minecraftforge/event/TickEvent$ClientTickEvent;)V", at = @At("HEAD"), cancellable = true)
     private void epicscorch$onClientTickHead(TickEvent.ClientTickEvent event, CallbackInfo ci) {
-        if (BalanceHandler.shouldBlockAiming(Minecraft.getInstance().player)) {
+        if (BalanceHandler.isCurrentlyRestricted()) {
             this.aiming = false;
+            ((AimingHandlerAccessor)this).setNormalisedAdsProgress(0.0);
+            // Fix Bug 1 (part): ModSyncedDataKeys.AIMING can remain true on the client
+            // even after ci.cancel() if the C2SMessageAim(false) packet hasn't been
+            // processed yet. AnimatedGunItem.handlePlayerStateUpdates() reads this key
+            // directly and writes IsAiming to NBT, re-enabling AIM motion.
+            // Forcing it false here prevents that leak.
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            if (mc.player != null) {
+                top.ribs.scguns.init.ModSyncedDataKeys.AIMING.setValue(mc.player, false);
+            }
+            ci.cancel(); // Completely stop SCG's aiming logic while restricted
         }
     }
 
     @Inject(method = "isAiming()Z", at = @At("HEAD"), cancellable = true)
     private void epicscorch$forceNotAiming(org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
-        if (BalanceHandler.shouldBlockAiming(Minecraft.getInstance().player)) {
+        if (BalanceHandler.isCurrentlyRestricted()) {
             cir.setReturnValue(false);
         }
     }

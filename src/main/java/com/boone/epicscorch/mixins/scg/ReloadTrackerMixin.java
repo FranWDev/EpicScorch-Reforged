@@ -20,7 +20,6 @@ public class ReloadTrackerMixin {
     @Inject(method = "increaseAmmo", at = @At("HEAD"), cancellable = true)
     private void blockAmmoIncreaseDuringDodge(Player player, CallbackInfo ci) {
         if (player == null) return;
-        // ensure we're on server side
         if (player.level().isClientSide) return;
 
         // Block if sprinting

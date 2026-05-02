@@ -14,8 +14,7 @@ import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 
 /**
- * Syncs gun firing with Epic Fight's combat state.
- * Can't fire while in combat actions, cooldowns, or airborne.
+ * Blocks gun firing during combat actions, cooldowns, or while airborne.
  */
 @Mixin(value = ShootingHandler.class, remap = false)
 public abstract class ShootingHandlerMixin {

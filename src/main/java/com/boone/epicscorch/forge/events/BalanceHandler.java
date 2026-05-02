@@ -41,6 +41,7 @@ public class BalanceHandler {
     private static final Map<Long, Long> epicscorch$lastAnimReset = new HashMap<>();
     private static final Map<UUID, Integer> epicscorch$stopTimeout = new HashMap<>();
     private static int restrictionCooldown = 0;
+    private static int reloadCancelCooldown = 0;
     private static boolean currentTickRestricted = false;
 
     public static boolean isCurrentlyRestricted() {
@@ -65,6 +66,11 @@ public class BalanceHandler {
         boolean isAirborne = (!player.onGround() && Math.abs(player.getDeltaMovement().y) > 0.01)
                 || mc.options.keyJump.isDown();
 
+        // If reloading, allow airborne to avoid triggering unnecessary cancellations
+        if (ModSyncedDataKeys.RELOADING.getValue(player)) {
+            isAirborne = false;
+        }
+
         return sprintBlocked || inAction || isAirborne;
     }
 
@@ -81,12 +87,21 @@ public class BalanceHandler {
         boolean isSprinting = player.isSprinting();
         boolean isSprintKeyDown = mc.options.keySprint.isDown();
 
+        // If jumping/airborne, NEVER block reloading (user requested "normal" jumping)
+        // We check keyJump.isDown() to protect the very first tick of the jump before onGround updates.
+        if (!player.onGround() || mc.options.keyJump.isDown()) {
+            return false;
+        }
+
         // Reload is NOT blocked by jumping/airborne
         return isSprinting || isSprintKeyDown || inAction;
     }
 
     public static boolean shouldBeRestricted(LocalPlayer player) {
-        return shouldBlockAiming(player) || shouldBlockReloading(player);
+        if (player == null)
+            return false;
+        boolean isStopping = player.getMainHandItem().getOrCreateTag().getBoolean("scguns:IsPlayingReloadStop");
+        return shouldBlockAiming(player) || shouldBlockReloading(player) || isStopping || reloadCancelCooldown > 0;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -101,11 +116,21 @@ public class BalanceHandler {
 
         boolean restricted = shouldBeRestricted(player);
         if (restricted) {
-            restrictionCooldown = 2; // Stay restricted for 2 more ticks to prevent flickering
+            restrictionCooldown = 5; // Buffer to prevent state flickering
         } else if (restrictionCooldown > 0) {
             restrictionCooldown--;
             restricted = true;
         }
+
+        if (reloadCancelCooldown > 0) {
+            // Only count down once the server has confirmed RELOADING=false.
+            // This prevents the race condition where restriction lifts before the
+            // server ACK arrives, which was causing the animation fight (Bug 1).
+            if (player == null || !ModSyncedDataKeys.RELOADING.getValue(player)) {
+                reloadCancelCooldown--;
+            }
+        }
+
         currentTickRestricted = restricted;
     }
 
@@ -125,12 +150,65 @@ public class BalanceHandler {
         boolean isStoppingReload = false;
 
         if (heldItem.getItem() instanceof GunItem) {
-            isStoppingReload = heldItem.getOrCreateTag().getBoolean("scguns:IsPlayingReloadStop");
+            CompoundTag tag = heldItem.getOrCreateTag();
+            
+            // Fix for infinite manual/sequential reload loop (Bug 2):
+            // If the server says we are NOT reloading, but GeckoLib is still playing a reload animation,
+            // it means the server sent a stop but the client ignored it (e.g. due to ammo latency).
+            // Force a nuclear cleanup.
+            if (!ModSyncedDataKeys.RELOADING.getValue(player)) {
+                if (heldItem.getItem() instanceof AnimatedGunItem animated) {
+                    try {
+                        long id = GeoItem.getId(heldItem);
+                        AnimationController<?> controller = animated.getAnimatableInstanceCache()
+                                .getManagerForId(id).getAnimationControllers().get("controller");
+                                
+                        if (controller != null) {
+                            boolean isStuck = false;
+                            if (controller.getCurrentAnimation() != null) {
+                                String animName = controller.getCurrentAnimation().animation().name();
+                                isStuck = animName.equals("reload_loop") ||
+                                          animName.equals("carbine_reload_loop") ||
+                                          animName.equals("reload") ||
+                                          animName.equals("carbine_reload") ||
+                                          animName.equals("reload_start") ||
+                                          animName.equals("carbine_reload_start");
+                            }
+                                              
+                            if (isStuck) {
+                                animated.cleanupReloadState(tag);
+                                tag.remove("ReloadTick");
+                                tag.remove("ReloadLoopTick");
+                                tag.remove("ReloadComplete");
+                                tag.remove("scguns:ReloadComplete");
+                                tag.remove("scguns:ReloadProgress");
+                                tag.remove("scguns:ReloadTick");
+                                tag.remove("scguns:ReloadLoopTick");
+                                tag.remove("scguns:AnimationReloadState");
+                                tag.remove("scguns:IsPlayingReloadStop");
+                                tag.remove("scguns:IsPlayingReloadLoop");
+                                tag.remove("scguns:IsReloading");
+                                tag.remove("IsReloading");
+                                tag.remove("IsManualReload");
+                                tag.remove("InCriticalReloadPhase");
+                                tag.remove("scguns:ShouldStopAfterLoop");
+                                
+                                tag.putString("scguns:ReloadState", "IDLE");
+                                controller.stop();
+                                controller.forceAnimationReset();
+                                controller.tryTriggerAnimation(animated.isInCarbineMode(heldItem) ? "carbine_idle" : "idle");
+                            }
+                        }
+                    } catch (Exception e) {}
+                }
+            }
+
+            isStoppingReload = tag.getBoolean("scguns:IsPlayingReloadStop");
         }
 
-        // We continue calling cancelAimAndReload if restricted OR if we are in the
-        // middle of a forced reload stop
-        boolean blockAim = shouldBlockAiming(player) || restrictionCooldown > 0;
+        // Maintain cancellation if restricted or during a forced reload stop/cooldown
+        boolean blockAim = shouldBlockAiming(player) || restrictionCooldown > 0 || isStoppingReload
+                || reloadCancelCooldown > 0;
         boolean blockReload = shouldBlockReloading(player);
 
         if (blockAim || blockReload || isStoppingReload) {
@@ -138,10 +216,14 @@ public class BalanceHandler {
             boolean aiming = aimingHandler.isAiming()
                     || ((AimingHandlerAccessor) aimingHandler).getNormalisedAdsProgress() > 0.01;
 
-            if (aiming || reloading || isStoppingReload) {
-                cancelAimAndReload(player, blockAim, blockReload);
+            // Only trigger cancellation if the action is currently active AND blocked
+            boolean forceCancelAim = aiming && blockAim;
+            boolean forceCancelReload = (reloading || isStoppingReload) && blockReload;
 
-                if (blockAim) {
+            if (forceCancelAim || forceCancelReload) {
+                cancelAimAndReload(player, forceCancelAim, forceCancelReload);
+
+                if (forceCancelAim) {
                     ((AimingHandlerAccessor) aimingHandler).setNormalisedAdsProgress(0.0);
                 }
             }
@@ -182,9 +264,10 @@ public class BalanceHandler {
 
         if (heldItem.getItem() instanceof GunItem gunItem) {
             CompoundTag tag = heldItem.getOrCreateTag();
+
             String reloadState = tag.getString("scguns:ReloadState");
-            boolean isActuallyReloading = reloading || reloadState.equals("RELOAD") || reloadState.equals("START") ||
-                    reloadState.equals("STARTING") || reloadState.equals("LOADING");
+            boolean isActuallyReloading = (reloadState.equals("RELOAD") || reloadState.equals("START") ||
+                    reloadState.equals("STARTING") || reloadState.equals("LOADING"));
             boolean isStopping = tag.getBoolean("scguns:IsPlayingReloadStop") || reloadState.contains("STOP");
 
             if ((isActuallyReloading || isStopping) && forceCancelReload) {
@@ -192,62 +275,52 @@ public class BalanceHandler {
                 boolean isManual = gun.getReloads().getReloadType() == ReloadType.MANUAL;
 
                 if (reloading) {
-                    if (isManual) {
-                        if (!isStopping) {
-                            tag.putString("scguns:ReloadState", "STOPPING");
-                            tag.putBoolean("scguns:IsPlayingReloadStop", true);
+                    // Force immediate stop for ALL guns (manual or mag-fed) to prevent animation conflicts
+                    ModSyncedDataKeys.RELOADING.setValue(player, false);
+                    ModSyncedDataKeys.AIMING.setValue(player, false);
+                    PacketHandler.getPlayChannel().sendToServer(new C2SMessageReload(false));
+                    PacketHandler.getPlayChannel().sendToServer(new C2SMessageAim(false));
 
-                            // Clear intent tags immediately to prevent Scorched Guns (and our own mixins)
-                            // from continuing the reload
-                            tag.remove("InCriticalReloadPhase");
-                            tag.remove("InReloadLoop");
-                            tag.remove("IsReloading");
-                            tag.remove("scguns:IsReloading");
-                            tag.remove("scguns:ReloadComplete");
-                            tag.remove("scguns:ReloadProgress");
-                            tag.remove("scguns:AnimationReloadState");
+                    // Thorough cleanup of NBT state to prevent Epic Fight from thinking we are
+                    // still reloading
+                    if (heldItem.getItem() instanceof AnimatedGunItem animated) {
+                        animated.cleanupReloadState(tag);
 
-                            // Call SCG's stop logic only ONCE at the beginning of the stop
-                            if (reloadHandler != null)
-                                reloadHandler.setReloading(false);
-                            PacketHandler.getPlayChannel().sendToServer(new C2SMessageReload(false));
-                        }
-                    } else {
-                        // Non-manual reloads: stop immediately and clear data key
-                        ModSyncedDataKeys.RELOADING.setValue(player, false);
-                        if (reloadHandler != null)
-                            reloadHandler.setReloading(false);
-                        PacketHandler.getPlayChannel().sendToServer(new C2SMessageReload(false));
-
-                        // AGGRESSIVE CLEANUP for mag-fed guns to prevent "flickering" later
-                        tag.remove("InCriticalReloadPhase");
-                        tag.remove("IsReloading");
-                        tag.remove("scguns:IsReloading");
-                        tag.remove("InReloadLoop");
+                        // Nuclear cleanup of all possible reload-related tags
+                        tag.remove("ReloadTick");
+                        tag.remove("ReloadLoopTick");
+                        tag.remove("ReloadComplete");
                         tag.remove("scguns:ReloadComplete");
                         tag.remove("scguns:ReloadProgress");
-                        tag.remove("scguns:ReloadState");
+                        tag.remove("scguns:ReloadTick");
+                        tag.remove("scguns:ReloadLoopTick");
                         tag.remove("scguns:AnimationReloadState");
                         tag.remove("scguns:IsPlayingReloadStop");
                         tag.remove("scguns:IsPlayingReloadLoop");
-                        tag.remove("ReloadTick");
-                        tag.remove("ReloadLoopTick");
+                        tag.remove("scguns:IsReloading");
+                        tag.remove("IsManualReload");
+                        tag.remove("InCriticalReloadPhase");
+                        tag.remove("scguns:ShouldStopAfterLoop"); // Crucial for manual/sequential weapons!
 
-                        // Force GeckoLib to reset to idle
-                        if (heldItem.getItem() instanceof AnimatedGunItem animated) {
-                            try {
-                                long id = GeoItem.getId(heldItem);
-                                AnimationController<?> controller = animated.getAnimatableInstanceCache()
-                                        .getManagerForId(id).getAnimationControllers().get("controller");
-                                if (controller != null) {
-                                    controller.forceAnimationReset();
-                                    controller.tryTriggerAnimation(
-                                            animated.isInCarbineMode(heldItem) ? "carbine_idle" : "idle");
-                                }
-                            } catch (Exception e) {
+                        // Force state to IDLE to satisfy Epic Fight's isActuallyReloading check
+                        tag.putString("scguns:ReloadState", "IDLE");
+
+                        // Force GeckoLib to reset to idle instantly
+                        try {
+                            long id = GeoItem.getId(heldItem);
+                            AnimationController<?> controller = animated.getAnimatableInstanceCache()
+                                    .getManagerForId(id).getAnimationControllers().get("controller");
+                            if (controller != null) {
+                                controller.stop();
+                                controller.forceAnimationReset();
+                                controller.tryTriggerAnimation(
+                                        animated.isInCarbineMode(heldItem) ? "carbine_idle" : "idle");
                             }
+                        } catch (Exception e) {
                         }
                     }
+
+                    reloadCancelCooldown = 10;
                 }
 
                 boolean isPlayingStopAnim = tag.getBoolean("scguns:IsPlayingReloadStop");
@@ -294,7 +367,6 @@ public class BalanceHandler {
                     tag.remove("scguns:IsReloading");
                     tag.remove("InReloadLoop");
                     tag.remove("IsManualReload");
-                    tag.remove("scguns:ReloadComplete");
                     tag.remove("scguns:ReloadProgress");
                     tag.remove("scguns:ReloadState");
                     tag.remove("scguns:AnimationReloadState");
@@ -302,6 +374,8 @@ public class BalanceHandler {
                     tag.remove("scguns:IsPlayingReloadLoop");
                     tag.remove("ReloadTick");
                     tag.remove("ReloadLoopTick");
+
+                    reloadCancelCooldown = 10;
                 }
             }
         }

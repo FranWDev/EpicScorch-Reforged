@@ -53,6 +53,13 @@ public class AbstractClientPlayerPatchMixin {
         boolean reloading = isActuallyReloading(player);
         boolean stoppingReload = isStoppingReload(stack);
 
+        // Fix Bug 1: When restricted (sprinting, dodging, or in cancel-cooldown), zero
+        // the hysteresis counter immediately so it doesn't keep LivingMotions.AIM active
+        // for 10 extra ticks, which was creating "animation fighting" post-cancellation.
+        if (restricted) {
+            aimHoldCounters.put(id, 0);
+        }
+
         if (aiming && !restricted && !inAction && !isDrawingWeapon(player)) {
             aimHoldCounters.put(id, AIM_LEAVE_HYSTERESIS);
             event.setMotion(LivingMotions.AIM);
@@ -109,11 +116,13 @@ public class AbstractClientPlayerPatchMixin {
 
     private static boolean isActuallyAiming(AbstractClientPlayer player) {
         if (player.isLocalPlayer()) {
-            // Use the local AimingHandler state, which correctly respects blocks during actions/inaction
+            // Use the local AimingHandler state, which correctly respects blocks during
+            // actions/inaction
             return AimingHandler.get().isAiming();
         }
 
-        // For remote players, use the synced data key to avoid mirroring the local player's state
+        // For remote players, use the synced data key to avoid mirroring the local
+        // player's state
         return ModSyncedDataKeys.AIMING.getValue(player);
     }
 
@@ -124,6 +133,9 @@ public class AbstractClientPlayerPatchMixin {
 
         CompoundTag tag = stack.getOrCreateTag();
         if (isStoppingReload(stack))
+            return false;
+
+        if (player.isLocalPlayer() && BalanceHandler.shouldBeRestricted((LocalPlayer) player))
             return false;
 
         if (ModSyncedDataKeys.RELOADING.getValue(player))

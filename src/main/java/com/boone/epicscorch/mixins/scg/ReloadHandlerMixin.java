@@ -17,11 +17,12 @@ import net.minecraftforge.event.TickEvent;
 import org.spongepowered.asm.mixin.Shadow;
 import top.ribs.scguns.init.ModSyncedDataKeys;
 import net.minecraft.client.KeyMapping;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import top.ribs.scguns.client.KeyBinds;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(value = ReloadHandler.class, remap = false)
 public abstract class ReloadHandlerMixin {
+    
     private static final KeyMapping DUMMY_MAPPING = new KeyMapping("epicscorch.dummy", -1, "key.categories.scguns") {
         @Override
         public boolean isDown() {
@@ -50,7 +51,7 @@ public abstract class ReloadHandlerMixin {
         LocalPlayer player = mc.player;
         if (player == null) return;
 
-        // Use the centralized restriction check
+        // Use the centralized restriction check for starting new reloads
         if (BalanceHandler.shouldBlockReloading(player)) {
             ci.cancel();
         }
@@ -58,7 +59,6 @@ public abstract class ReloadHandlerMixin {
 
     @Inject(method = "onClientTick(Lnet/minecraftforge/event/TickEvent$ClientTickEvent;)V", at = @At("HEAD"))
     private void epicscorch$onClientTickHead(TickEvent.ClientTickEvent event, CallbackInfo ci) {
-        // No longer calling setReloading(false) here to avoid premature tag cleanup.
-        // Input is blocked via Redirect in AimingHandlerMixin and logic is handled in BalanceHandler.
+        // Handled in BalanceHandler
     }
 }

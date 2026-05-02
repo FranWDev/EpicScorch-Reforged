@@ -25,7 +25,7 @@ public abstract class ControlEngineMixin {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
-            // Bloquea cualquier intento de ataque de Epic Fight si se sostiene un arma
+            // Prevent Epic Fight attacks while holding a gun or aiming
             if (stack.getItem() instanceof GunItem || AimingHandler.get().isAiming()) {
                 ci.cancel();
             }
