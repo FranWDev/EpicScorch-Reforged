@@ -22,6 +22,7 @@ public class EpicScorch {
       modEventBus.addListener(this::onCommonSetup);
       
       this.registerSharedEventListeners();
+      com.boone.epicscorch.forge.world.capabilities.items.GunCapabilityPresets.register();
       
       if (FMLEnvironment.dist.isClient()) {
          ClientEventHandler.registerClient();

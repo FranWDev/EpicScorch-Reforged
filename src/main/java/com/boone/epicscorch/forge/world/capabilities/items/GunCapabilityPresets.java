@@ -4,15 +4,13 @@ import com.boone.epicscorch.forge.gameasset.animation.Animations;
 import java.util.function.Function;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import yesman.epicfight.api.animation.LivingMotions;
+import yesman.epicfight.api.event.EpicFightEventHooks;
 import yesman.epicfight.api.event.types.registry.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Builder;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 import yesman.epicfight.world.capabilities.item.RangedWeaponCapability;
 
-@EventBusSubscriber(modid = "epicscorch", bus = EventBusSubscriber.Bus.MOD)
 public class GunCapabilityPresets {
    public static final Function<Item, Builder<?>> PISTOL = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_PISTOL)
@@ -99,7 +97,10 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_GRENADE_THROW)
       .category(WeaponCategories.NOT_WEAPON);
 
-   @SubscribeEvent
+   public static void register() {
+      EpicFightEventHooks.Registry.WEAPON_CAPABILITY_PRESET.registerEvent(GunCapabilityPresets::onWeaponCapabilityPresetRegister);
+   }
+
    public static void onWeaponCapabilityPresetRegister(WeaponCapabilityPresetRegistryEvent event) {
       event.getTypeEntry().put(ResourceLocation.fromNamespaceAndPath("epicfight", "pistol"), PISTOL);
       event.getTypeEntry().put(ResourceLocation.fromNamespaceAndPath("epicfight", "rifle"), RIFLE);
