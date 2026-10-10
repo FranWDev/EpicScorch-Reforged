@@ -9,6 +9,7 @@ import yesman.epicfight.api.event.EpicFightEventHooks;
 import yesman.epicfight.api.event.types.registry.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Builder;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
+import yesman.epicfight.world.capabilities.item.CapabilityItem.ZoomInType;
 import yesman.epicfight.world.capabilities.item.RangedWeaponCapability;
 
 public class GunCapabilityPresets {
@@ -30,6 +31,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_PISTOL_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_PISTOL)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_PISTOL_AIM)
+      .zoomInType(ZoomInType.AIMING)
       .category(WeaponCategories.RANGED);
 
    public static final Function<Item, Builder<?>> RIFLE = item -> RangedWeaponCapability.builder()
@@ -50,6 +52,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_RIFLE_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_RIFLE)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_RIFLE_AIM)
+      .zoomInType(ZoomInType.AIMING)
       .category(WeaponCategories.RANGED);
 
    public static final Function<Item, Builder<?>> BAZOOKA = item -> RangedWeaponCapability.builder()
@@ -70,6 +73,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_BAZOOKA_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_BAZOOKA)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_BAZOOKA_AIM)
+      .zoomInType(ZoomInType.AIMING)
       .category(WeaponCategories.RANGED);
 
    public static final Function<Item, Builder<?>> MINI_GUN = item -> RangedWeaponCapability.builder()
@@ -90,11 +94,13 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.RELOAD, Animations.BIPED_MINI_GUN_RELOAD)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_MINI_GUN)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_HOLD_MINI_GUN)
+      .zoomInType(ZoomInType.AIMING)
       .category(WeaponCategories.RANGED);
 
    public static final Function<Item, Builder<?>> GRENADE = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_GRENADE_ARM)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_GRENADE_THROW)
+      .zoomInType(ZoomInType.AIMING)
       .category(WeaponCategories.RANGED);
 
    public static void register() {
