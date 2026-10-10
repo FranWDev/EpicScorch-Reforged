@@ -17,6 +17,15 @@ public class ShoulderSurfingCompatHelper {
         return ModList.get().isLoaded(SHOULDER_SURFING_MODID);
     }
 
+    public static boolean isActiveShoulderSurfing() {
+        if (!isShoulderSurfingLoaded()) return false;
+        try {
+            return com.github.exopandora.shouldersurfing.api.client.IShoulderSurfing.getInstance().isShoulderSurfing();
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
     public static boolean isHoldingGun(LivingEntity entity) {
         if (entity == null) return false;
         ItemStack mainHand = entity.getMainHandItem();
