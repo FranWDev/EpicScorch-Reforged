@@ -46,7 +46,7 @@ public abstract class ControlEngineMixin {
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
             if (stack.getItem() instanceof GunItem || AimingHandler.get().isAiming()) {
-                cir.setReturnValue(false);
+                cir.setReturnValue(true);
             }
         }
     }
