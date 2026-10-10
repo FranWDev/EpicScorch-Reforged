@@ -48,6 +48,7 @@ dependencies {
     implementation "curse.maven:framework-549225:7530361"
     implementation "curse.maven:curios-309927:6529130"
     implementation "curse.maven:geckolib-388172:8350073"
+    implementation "curse.maven:shoulder-surfing-reloaded-243190:9013811"
 }
 
 tasks.named('processResources', ProcessResources).configure {
