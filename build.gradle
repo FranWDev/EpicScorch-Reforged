@@ -3,7 +3,7 @@ plugins {
 }
 
 group = mod_group_id
-version = mod_version
+version = "${minecraft_version}-forge-${mod_version}"
 
 base {
     archivesName = 'epicscorch-reforged'
