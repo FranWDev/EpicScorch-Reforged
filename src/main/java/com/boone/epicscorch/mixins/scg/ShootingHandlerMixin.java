@@ -63,4 +63,17 @@ public abstract class ShootingHandlerMixin {
             epicscorch$wasInaction = isInaction;
         }
     }
+
+    /**
+     * When shooting in third-person with Shoulder Surfing active, ensure player rotations
+     * (yaw/pitch, head, body) are precisely aligned with the 3D crosshair target before C2SMessageShoot is dispatched.
+     */
+    @Inject(method = "fire", at = @At("HEAD"))
+    private void epicscorch$alignRotationBeforeFire(Player player, ItemStack heldItem, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+        if (player instanceof net.minecraft.client.player.LocalPlayer localPlayer) {
+            if (com.boone.epicscorch.compat.shouldersurfing.ShoulderSurfingCompatHelper.isActiveShoulderSurfing()) {
+                com.boone.epicscorch.compat.shouldersurfing.ShoulderSurfingAimRotationHandler.alignPlayerWithCrosshair(localPlayer);
+            }
+        }
+    }
 }

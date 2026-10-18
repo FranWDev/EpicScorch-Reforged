@@ -36,6 +36,8 @@ repositories {
 }
 
 dependencies {
+    modImplementation "curse.maven:shoulder-surfing-reloaded-243190:9013779"
+
     modImplementation "curse.maven:epic-fight-mod-405076:7919289"
     modImplementation "curse.maven:scorched-guns-2-802940:7232063"
     modImplementation "curse.maven:framework-549225:5911986"
