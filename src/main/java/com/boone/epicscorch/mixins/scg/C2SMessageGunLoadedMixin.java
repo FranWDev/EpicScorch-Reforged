@@ -33,7 +33,7 @@ public class C2SMessageGunLoadedMixin {
         // (the jump exemption path in BalanceHandler does not write it, but edge-case tick
         // ordering may leave it stale on the server). The sprint and action guards below still
         // apply, so there is no exploit surface from bypassing only this check mid-air.
-        if (!player.onGround()) return;
+        if (!player.onGround() && !player.isPassenger()) return;
 
         // Must be in RELOADING state (server authority) — guards against infinite reload loops
         // and magazine weapons receiving extra ammo outside a valid reload cycle.

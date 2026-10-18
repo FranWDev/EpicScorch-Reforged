@@ -90,6 +90,7 @@ public class BalanceHandler {
 
         boolean isReloading = ModSyncedDataKeys.RELOADING.getValue(player);
         boolean isAirborne = !isReloading
+                && !player.isPassenger()
                 && ((!player.onGround() && Math.abs(player.getDeltaMovement().y) > 0.01)
                         || mc.options.keyJump.isDown());
 
@@ -116,13 +117,13 @@ public class BalanceHandler {
                 && playerPatch.getEntityState().inaction()
                 && EpicScorchConfig.CANCEL_RELOAD_ON_ACTION.get();
 
-        if (inAction && player.onGround()) {
+        if (inAction && (player.onGround() || player.isPassenger())) {
             inActionTicks++;
         } else {
             inActionTicks = 0;
         }
 
-        if (!player.onGround() || mc.options.keyJump.isDown()) {
+        if ((!player.onGround() && !player.isPassenger()) || (mc.options.keyJump.isDown() && !player.isPassenger())) {
             return false;
         }
 
@@ -362,7 +363,7 @@ public class BalanceHandler {
      */
     private static void repairGeckolibDesync(ItemStack stack, CompoundTag tag, AnimatedGunItem animated) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && !mc.player.onGround())
+        if (mc.player != null && !mc.player.onGround() && !mc.player.isPassenger())
             return;
         if (tag.getBoolean("ReloadComplete") || tag.getBoolean("scguns:ReloadComplete"))
             return;
