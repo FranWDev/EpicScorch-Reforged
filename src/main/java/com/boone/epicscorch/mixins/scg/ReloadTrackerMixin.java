@@ -27,7 +27,7 @@ public class ReloadTrackerMixin {
         }
 
         // Allow ammo increase while airborne (jumping)
-        if (!player.onGround()) {
+        if (!player.onGround() && !player.isPassenger()) {
             return;
         }
 
