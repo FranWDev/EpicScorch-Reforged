@@ -5,6 +5,7 @@ import com.boone.epicscorch.forge.PlayerHandler;
 import com.boone.epicscorch.forge.ServerEventHandler;
 import com.boone.epicscorch.forge.client.ClientEventHandler;
 import com.boone.epicscorch.forge.world.capabilities.items.GunCapabilityPresets;
+import com.boone.epicscorch.forge.world.capabilities.items.GunCapabilityProvider;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -21,6 +22,7 @@ public class EpicScorch {
       modContainer.registerConfig(ModConfig.Type.COMMON, EpicScorchConfig.SPEC);
       
       modEventBus.addListener(this::onCommonSetup);
+      modEventBus.addListener(GunCapabilityProvider::registerCapabilities);
       
       this.registerSharedEventListeners();
       GunCapabilityPresets.register();
@@ -39,5 +41,3 @@ public class EpicScorch {
       NeoForge.EVENT_BUS.register(PlayerHandler.class);
    }
 }
-
-

@@ -1,19 +1,32 @@
 package com.boone.epicscorch.forge.world.capabilities.items;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.jetbrains.annotations.Nullable;
 import top.ribs.scguns.common.GripType;
 import top.ribs.scguns.common.Gun;
 import top.ribs.scguns.item.GrenadeItem;
 import top.ribs.scguns.item.GunItem;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
 public class GunCapabilityProvider implements ICapabilityProvider<ItemStack, Void, CapabilityItem> {
    public static final GunCapabilityProvider INSTANCE = new GunCapabilityProvider();
+   private final Map<Item, CapabilityItem> cache = new ConcurrentHashMap<>();
+
+   public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+      BuiltInRegistries.ITEM.forEach(item -> {
+         if (item instanceof GunItem || item instanceof GrenadeItem) {
+            event.registerItem(EpicFightCapabilities.CAPABILITY_ITEM, INSTANCE, item);
+         }
+      });
+   }
 
    @Override
    public @Nullable CapabilityItem getCapability(ItemStack itemStack, Void context) {
@@ -22,6 +35,10 @@ public class GunCapabilityProvider implements ICapabilityProvider<ItemStack, Voi
          return null;
       }
 
+      return cache.computeIfAbsent(item, k -> buildCapability(itemStack, k));
+   }
+
+   private CapabilityItem buildCapability(ItemStack itemStack, Item item) {
       String gripType = "UNKNOWN";
       String registryPath = "unknown";
 
@@ -34,6 +51,9 @@ public class GunCapabilityProvider implements ICapabilityProvider<ItemStack, Voi
          if (item instanceof GunItem gunItem) {
             Gun gun = gunItem.getGun();
             GripType grip = gun.getGeneral().getBaseGripType();
+            if (grip == null) {
+               grip = gun.getGeneral().getGripType(itemStack);
+            }
             if (grip != null) {
                gripType = grip.id().getPath().toUpperCase();
             }
@@ -42,9 +62,9 @@ public class GunCapabilityProvider implements ICapabilityProvider<ItemStack, Voi
       }
 
       if ("UNKNOWN".equals(gripType)) {
-         if (registryPath.contains("pistol") || registryPath.contains("revolver") || registryPath.contains("spirulida") || registryPath.contains("hand_cannon")) {
+         if (registryPath.contains("pistol") || registryPath.contains("revolver") || registryPath.contains("hand_cannon")) {
             gripType = "ONE_HANDED";
-         } else if (registryPath.contains("rifle") || registryPath.contains("musket") || registryPath.contains("carbine") || registryPath.contains("shotgun") || registryPath.contains("blunderbuss") || registryPath.contains("longarm")) {
+         } else if (registryPath.contains("rifle") || registryPath.contains("musket") || registryPath.contains("carbine") || registryPath.contains("carabine") || registryPath.contains("shotgun") || registryPath.contains("blunderbuss") || registryPath.contains("longarm")) {
             gripType = "TWO_HANDED_SHOTGUN";
          } else if (registryPath.contains("bazooka") || registryPath.contains("rocket") || registryPath.contains("launcher")) {
             gripType = "BAZOOKA";
