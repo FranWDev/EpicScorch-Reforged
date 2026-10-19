@@ -1,9 +1,11 @@
 # Epic Scorch: Reforged
 
-![Status](https://img.shields.io/badge/Status-In%20Development-orange)
-![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-blue)
-![Forge](https://img.shields.io/badge/Forge-47.4.20-red)
+![Status](https://img.shields.io/badge/Status-Released-brightgreen)
+![Forge](https://img.shields.io/badge/Forge-1.20.1-blue)
 ![License](https://img.shields.io/badge/License-GPLv3-green)
+
+[![CurseForge](https://img.shields.io/badge/CurseForge-Epic%20Scorch%3A%20Reforged-f16436?logo=curseforge&logoColor=white)](https://www.curseforge.com/minecraft/mc-mods/epic-scorch-reforged)
+[![Modrinth](https://img.shields.io/badge/Modrinth-Epic%20Scorch%3A%20Reforged-00AF5C?logo=modrinth&logoColor=white)](https://modrinth.com/mod/epic-scorch-reforged)
 
 **Epic Scorch: Reforged** is an unofficial update and expansion of the original [Epic Scorch](https://www.curseforge.com/minecraft/mc-mods/epic-scorch-epic-fight-x-scorched-guns) mod. It acts as a bridge between **Epic Fight** and **Scorched Guns**, bringing modern compatibility and enhanced gameplay mechanics to Minecraft 1.20.1.
 
