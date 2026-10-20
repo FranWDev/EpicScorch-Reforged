@@ -4,7 +4,8 @@ import net.neoforged.neoforge.common.NeoForge;
 
 public class ServerEventHandler {
    public static void registerServer() {
-      NeoForge.EVENT_BUS.register(ServerEventHandler.class);
+      // No server-only event handlers currently registered.
+      // Avoid calling NeoForge.EVENT_BUS.register() without @SubscribeEvent methods to prevent IllegalArgumentException.
    }
 }
 
