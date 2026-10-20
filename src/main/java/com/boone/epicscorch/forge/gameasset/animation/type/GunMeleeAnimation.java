@@ -62,7 +62,7 @@ public class GunMeleeAnimation extends ComboAttackAnimation {
             if (motion != null && motion != LivingMotions.NONE) {
                 AssetAccessor<? extends StaticAnimation> holdAnim = animator.getCompositeLivingMotion(motion);
                 if (holdAnim != null && holdAnim.isPresent()) {
-                    animator.playAnimation(holdAnim, 0.0F);
+                    animator.playAnimation(holdAnim, 0.15F);
                 }
             }
         }
