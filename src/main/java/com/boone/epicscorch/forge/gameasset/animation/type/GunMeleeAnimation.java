@@ -1,0 +1,100 @@
+package com.boone.epicscorch.forge.gameasset.animation.type;
+
+import com.boone.epicscorch.forge.combat.GunMeleeHelper;
+import java.util.List;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import top.ribs.scguns.item.GunItem;
+import yesman.epicfight.api.animation.AnimationManager.AnimationAccessor;
+import yesman.epicfight.api.animation.Joint;
+import yesman.epicfight.api.animation.property.AnimationProperty.StaticAnimationProperty;
+import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.ComboAttackAnimation;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
+import yesman.epicfight.api.animation.types.EntityState;
+import yesman.epicfight.api.asset.AssetAccessor;
+import yesman.epicfight.api.collider.Collider;
+import yesman.epicfight.api.model.Armature;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+
+public class GunMeleeAnimation extends ComboAttackAnimation {
+
+    public GunMeleeAnimation(
+        float transitionTime,
+        float preDelay,
+        float contact,
+        float recovery,
+        Collider collider,
+        Joint joint,
+        AnimationAccessor<? extends GunMeleeAnimation> accessor,
+        String clipPath,
+        AssetAccessor<? extends Armature> armature
+    ) {
+        super(transitionTime, preDelay, contact, recovery, collider, joint, accessor, armature);
+        this.resourceLocation = ResourceLocation.fromNamespaceAndPath("epicfight", "animmodels/animations/" + clipPath + ".json");
+        this.addProperty(
+            StaticAnimationProperty.PLAY_SPEED_MODIFIER,
+            (DynamicAnimation anim, LivingEntityPatch<?> patch, float speed, float prev, float elapsed) -> speed * 0.8F
+        );
+    }
+
+    @Override
+    protected void hurtCollidingEntities(
+        LivingEntityPatch<?> entitypatch,
+        float prevElapsedTime,
+        float elapsedTime,
+        EntityState prevState,
+        EntityState state,
+        AttackAnimation.Phase phase
+    ) {
+        if (entitypatch.isLogicalClient()) {
+            return;
+        }
+
+        LivingEntity original = entitypatch.getOriginal();
+        if (!(original instanceof ServerPlayer player)) {
+            return;
+        }
+
+        ItemStack heldItem = player.getMainHandItem();
+        if (!(heldItem.getItem() instanceof GunItem gunItem)) {
+            return;
+        }
+
+        List<Entity> list = phase.getCollidingEntities(
+            entitypatch,
+            this,
+            prevElapsedTime,
+            elapsedTime,
+            this.getPlaySpeed(entitypatch, this)
+        );
+
+        if (list.isEmpty()) {
+            return;
+        }
+
+        boolean hitAny = false;
+        for (Entity entity : list) {
+            LivingEntity target = getTrueEntity(entity);
+            if (target != null && target.isAlive() && target != player) {
+                if (entitypatch.getCurrentlyAttackTriedEntities().contains(target)) {
+                    continue;
+                }
+                entitypatch.getCurrentlyAttackTriedEntities().add(target);
+
+                boolean hit = GunMeleeHelper.applyMeleeHit(player, target, heldItem, gunItem);
+                if (hit) {
+                    hitAny = true;
+                    entitypatch.getCurrentlyActuallyHitEntities().add(target);
+                }
+            }
+        }
+
+        if (hitAny) {
+            GunMeleeHelper.damageWeapon(player, heldItem);
+        }
+    }
+}
