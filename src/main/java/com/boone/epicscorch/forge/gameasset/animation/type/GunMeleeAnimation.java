@@ -49,8 +49,13 @@ public class GunMeleeAnimation extends BasicAttackAnimation {
         this.resourceLocation = new ResourceLocation("epicfight", "animmodels/animations/" + clipPath + ".json");
         this.addProperty(
             StaticAnimationProperty.PLAY_SPEED_MODIFIER,
-            (DynamicAnimation anim, LivingEntityPatch<?> patch, float speed, float prev, float elapsed) -> speed * 0.8F
+            (DynamicAnimation anim, LivingEntityPatch<?> patch, float speed, float prev, float elapsed) -> 1.5F
         );
+    }
+
+    @Override
+    public float getPlaySpeed(LivingEntityPatch<?> entitypatch, DynamicAnimation animation) {
+        return 1.5F;
     }
 
     @Override
