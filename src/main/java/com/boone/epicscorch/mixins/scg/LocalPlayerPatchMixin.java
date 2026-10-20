@@ -1,5 +1,6 @@
 package com.boone.epicscorch.mixins.scg;
 
+import com.boone.epicscorch.forge.gameasset.animation.type.GunMeleeAnimation;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,7 +37,7 @@ public abstract class LocalPlayerPatchMixin {
 
         if (stack.getItem() instanceof GunItem) {
             StaticAnimation anim = animation.get();
-            if (anim instanceof AttackAnimation) {
+            if (anim instanceof AttackAnimation && !(anim instanceof GunMeleeAnimation)) {
                 ci.cancel();
             }
         }
