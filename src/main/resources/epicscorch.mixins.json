@@ -25,7 +25,10 @@
     "EpicFightCameraAPIMixin",
     "ReloadHandlerMixin",
     "ClientMeleeAttackHandlerMixin",
-    "GunRenderingHandlerMixin"
+    "GunRenderingHandlerMixin",
+    "GunItemStackRendererMixin",
+    "ItemInHandLayerEntityTrackerMixin",
+    "RenderItemBaseEntityTrackerMixin"
   ],
   "server": [
     "ReloadTrackerMixin",

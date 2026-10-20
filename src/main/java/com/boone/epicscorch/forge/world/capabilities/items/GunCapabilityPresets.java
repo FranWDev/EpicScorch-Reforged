@@ -32,7 +32,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_PISTOL)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_PISTOL_AIM)
       .zoomInType(ZoomInType.AIMING)
-      .category(WeaponCategories.RANGED);
+      .category(WeaponCategories.NOT_WEAPON);
 
    public static final Function<Item, Builder<?>> RIFLE = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_RIFLE)
@@ -53,7 +53,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_RIFLE)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_RIFLE_AIM)
       .zoomInType(ZoomInType.AIMING)
-      .category(WeaponCategories.RANGED);
+      .category(WeaponCategories.NOT_WEAPON);
 
    public static final Function<Item, Builder<?>> BAZOOKA = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_BAZOOKA)
@@ -74,7 +74,7 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_BAZOOKA)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_BAZOOKA_AIM)
       .zoomInType(ZoomInType.AIMING)
-      .category(WeaponCategories.RANGED);
+      .category(WeaponCategories.NOT_WEAPON);
 
    public static final Function<Item, Builder<?>> MINI_GUN = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.IDLE, Animations.BIPED_HOLD_MINI_GUN)
@@ -95,13 +95,13 @@ public class GunCapabilityPresets {
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_HOLD_MINI_GUN)
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_HOLD_MINI_GUN)
       .zoomInType(ZoomInType.AIMING)
-      .category(WeaponCategories.RANGED);
+      .category(WeaponCategories.NOT_WEAPON);
 
    public static final Function<Item, Builder<?>> GRENADE = item -> RangedWeaponCapability.builder()
       .addAnimationsModifier(LivingMotions.AIM, Animations.BIPED_GRENADE_ARM)
       .addAnimationsModifier(LivingMotions.SHOT, Animations.BIPED_GRENADE_THROW)
       .zoomInType(ZoomInType.AIMING)
-      .category(WeaponCategories.RANGED);
+      .category(WeaponCategories.NOT_WEAPON);
 
    public static void register() {
       EpicFightEventHooks.Registry.WEAPON_CAPABILITY_PRESET.registerEvent(GunCapabilityPresets::onWeaponCapabilityPresetRegister);

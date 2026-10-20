@@ -34,7 +34,11 @@ public class EpicScorchMixinPlugin implements IMixinConfigPlugin {
                     || mixinClassName.contains("AimingHandlerAccessor")
                     || mixinClassName.contains("AimingHandlerMixin")
                     || mixinClassName.contains("EpicFightCameraAPIMixin")
-                    || mixinClassName.contains("ReloadHandlerMixin")) {
+                    || mixinClassName.contains("ReloadHandlerMixin")
+                    || mixinClassName.contains("GunRenderingHandlerMixin")
+                    || mixinClassName.contains("ClientMeleeAttackHandlerMixin")
+                    || mixinClassName.contains("ItemInHandLayerEntityTrackerMixin")
+                    || mixinClassName.contains("RenderItemBaseEntityTrackerMixin")) {
                 return false;
             }
         }
