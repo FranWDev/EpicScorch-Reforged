@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.ribs.scguns.client.handler.AimingHandler;
 import top.ribs.scguns.item.GunItem;
+import com.boone.epicscorch.forge.gameasset.animation.type.GunMeleeAnimation;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
@@ -36,7 +37,7 @@ public abstract class LocalPlayerPatchMixin {
 
         if (stack.getItem() instanceof GunItem) {
             StaticAnimation anim = animation.get();
-            if (anim instanceof AttackAnimation) {
+            if (anim instanceof AttackAnimation && !(anim instanceof GunMeleeAnimation)) {
                 ci.cancel();
             }
         }

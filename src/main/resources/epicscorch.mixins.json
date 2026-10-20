@@ -6,7 +6,8 @@
   "refmap": "EpicScorch.refmap.json",
   "mixins": [
     "CapabilityItemMixin",
-    "ReloadTrackerMixin"
+    "ReloadTrackerMixin",
+    "MeleeAttackHandlerMixin"
   ],
   "client": [
     "GunItemStackRendererMixin",
@@ -22,7 +23,9 @@
     "AimingHandlerAccessor",
     "AimingHandlerMixin",
     "EpicFightCameraAPIMixin",
-    "ReloadHandlerMixin"
+    "ReloadHandlerMixin",
+    "ClientMeleeAttackHandlerMixin",
+    "GunRenderingHandlerMixin"
   ],
   "server": [
     "ReloadTrackerMixin",
