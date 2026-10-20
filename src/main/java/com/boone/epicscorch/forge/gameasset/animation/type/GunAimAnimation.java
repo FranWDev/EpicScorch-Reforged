@@ -26,16 +26,16 @@ public class GunAimAnimation extends AimAnimation {
          StaticAnimationProperty.PLAY_SPEED_MODIFIER,
          (DynamicAnimation animation, LivingEntityPatch<?> entitypatch, float speed, float prevElapsedTime, float elapsedTime) -> {
             if (animation.isLinkAnimation()) {
-               return 1.0F;
+               return speed;
             }
 
             // Lock animation at the final frame during ADS or vanilla ranged weapon usage.
             boolean isAiming = AimingHandler.get().isAiming() || entitypatch.getOriginal().isUsingItem();
             if (isAiming) {
-               return (this.getTotalTime() - elapsedTime) / this.getTotalTime();
+               return ((this.getTotalTime() - elapsedTime) / this.getTotalTime()) * speed;
             }
 
-            return 1.0F;
+            return speed;
          }
       );
    }
