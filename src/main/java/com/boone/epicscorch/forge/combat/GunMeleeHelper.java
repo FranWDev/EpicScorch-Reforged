@@ -51,16 +51,21 @@ public class GunMeleeHelper {
 
     private static Collider createColliderForReach(float reach) {
         double clampedReach = Math.max(1.5D, Math.min(6.0D, reach));
-        // In the swing animation orientation for Tool_R:
-        // Local Y projects horizontally forward towards the enemy (reach / 'largo').
-        // Local Z projects vertically up/down (height / 'alto').
-        // Local X is lateral thickness.
-        // We scale sizeY and centerY with reach so the hitbox extends forward along the weapon reach,
-        // while sizeZ remains consistent with the attack strike thickness.
-        double sizeX = 0.35D + Math.min(0.15D, (clampedReach - 2.0D) * 0.04D);
-        double sizeY = 0.45D + (clampedReach - 2.0D) * 0.28D;
-        double sizeZ = 0.35D + Math.min(0.15D, (clampedReach - 2.0D) * 0.04D);
-        double centerY = 0.20D + (clampedReach - 2.0D) * 0.38D;
+        // Wasted 3 hours because of not knowing basic math lmao
+        // In Tool_R for firearms (due to Scorched Guns rendering transform):
+        // The local Y axis aligns horizontally with the barrel of the gun.
+        // sizeY is the half-extent (box total length = 2 * sizeY).
+        // Scorched Guns melee reach is measured in world raycast blocks from eye position (base 3.0F).
+        // In local bone space (Tool_R at the hand), 1.0F of reach corresponds to ~0.50m of weapon length.
+        // For each deltaReach:
+        // - sizeY grows by ~0.25D (total box length grows by ~0.50D)
+        // - centerY shifts forward by ~0.28D to advance along the barrel
+        // This lands the tip directly at the muzzle/bayonet tip across all gun types.
+        double deltaReach = clampedReach - 2.0D;
+        double sizeX = 0.35D + Math.min(0.15D, deltaReach * 0.04D);
+        double sizeY = 0.40D + (deltaReach * 0.25D);
+        double sizeZ = 0.35D + Math.min(0.15D, deltaReach * 0.04D);
+        double centerY = -0.32D - (deltaReach * 0.28D);
 
         return new MultiOBBCollider(3, sizeX, sizeY, sizeZ, 0.0D, centerY, 0.0D);
     }

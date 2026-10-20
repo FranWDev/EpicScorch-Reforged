@@ -91,12 +91,15 @@ public class GunMeleeAnimation extends ComboAttackAnimation {
             return;
         }
 
+        float prevPoseTime = prevState.attacking() ? prevElapsedTime : phase.preDelay;
+        float poseTime = state.attacking() ? elapsedTime : phase.contact;
+
         Collider gunCollider = GunMeleeHelper.getDynamicCollider(heldItem, gunItem);
         List<Entity> list = gunCollider.updateAndSelectCollideEntity(
             entitypatch,
             this,
-            prevElapsedTime,
-            elapsedTime,
+            prevPoseTime,
+            poseTime,
             this.joint,
             this.getPlaySpeed(entitypatch, this)
         );
