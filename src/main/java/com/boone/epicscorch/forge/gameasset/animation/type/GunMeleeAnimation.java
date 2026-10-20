@@ -21,6 +21,10 @@ import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import yesman.epicfight.api.animation.AnimationPlayer;
+import yesman.epicfight.api.utils.side.ClientOnly;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
@@ -87,11 +91,13 @@ public class GunMeleeAnimation extends ComboAttackAnimation {
             return;
         }
 
-        List<Entity> list = phase.getCollidingEntities(
+        Collider gunCollider = GunMeleeHelper.getDynamicCollider(heldItem, gunItem);
+        List<Entity> list = gunCollider.updateAndSelectCollideEntity(
             entitypatch,
             this,
             prevElapsedTime,
             elapsedTime,
+            this.joint,
             this.getPlaySpeed(entitypatch, this)
         );
 
@@ -118,6 +124,38 @@ public class GunMeleeAnimation extends ComboAttackAnimation {
 
         if (hitAny) {
             GunMeleeHelper.damageWeapon(player, heldItem);
+        }
+    }
+
+    @Override
+    @ClientOnly
+    public void renderDebugging(
+        PoseStack poseStack,
+        MultiBufferSource buffer,
+        LivingEntityPatch<?> entitypatch,
+        float playbackTime,
+        float partialTicks
+    ) {
+        AnimationPlayer animPlayer = entitypatch.getAnimator().getPlayerFor(this.getAccessor());
+        if (animPlayer == null) {
+            return;
+        }
+
+        float prevElapsedTime = animPlayer.getPrevElapsedTime();
+        float elapsedTime = animPlayer.getElapsedTime();
+
+        ItemStack heldItem = entitypatch.getOriginal().getMainHandItem();
+        Collider collider;
+        if (heldItem.getItem() instanceof GunItem gunItem) {
+            collider = GunMeleeHelper.getDynamicCollider(heldItem, gunItem);
+        } else {
+            Phase phase = this.getPhaseByTime(playbackTime);
+            JointColliderPair[] colliders = phase.getColliders();
+            collider = colliders.length > 0 ? colliders[0].getSecond() : null;
+        }
+
+        if (collider != null) {
+            collider.draw(poseStack, buffer, entitypatch, this, this.joint, prevElapsedTime, elapsedTime, partialTicks, this.getPlaySpeed(entitypatch, this));
         }
     }
 }

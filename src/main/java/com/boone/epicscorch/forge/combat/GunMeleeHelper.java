@@ -22,10 +22,42 @@ import top.ribs.scguns.item.BayonetItem;
 import top.ribs.scguns.item.GunItem;
 import top.ribs.scguns.item.attachment.IAttachment;
 import top.ribs.scguns.util.GunModifierHelper;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import yesman.epicfight.api.collider.Collider;
+import yesman.epicfight.api.collider.MultiOBBCollider;
 
 public class GunMeleeHelper {
 
     private static final float ENCHANTMENT_DAMAGE_SCALING_FACTOR = 0.70f;
+    private static final Map<Integer, Collider> COLLIDER_CACHE = new ConcurrentHashMap<>();
+
+    public static float getEffectiveMeleeReach(ItemStack heldItem, GunItem gunItem) {
+        float reach = gunItem.getModifiedGun(heldItem).getGeneral().getMeleeReach();
+        if (gunItem.hasBayonet(heldItem)) {
+            reach += 0.6F;
+        }
+        if (gunItem.hasExtendedBarrel(heldItem)) {
+            reach += 0.3F;
+        }
+        return reach;
+    }
+
+    public static Collider getDynamicCollider(ItemStack heldItem, GunItem gunItem) {
+        float reach = getEffectiveMeleeReach(heldItem, gunItem);
+        int key = Math.round(reach * 10.0F);
+        return COLLIDER_CACHE.computeIfAbsent(key, k -> createColliderForReach(k / 10.0F));
+    }
+
+    private static Collider createColliderForReach(float reach) {
+        double clampedReach = Math.max(1.5D, Math.min(6.0D, reach));
+        double sizeZ = 0.45D + (clampedReach - 2.0D) * 0.28D;
+        double centerZ = -0.20D - (clampedReach - 2.0D) * 0.38D;
+        double sizeX = 0.35D + Math.min(0.15D, (clampedReach - 2.0D) * 0.04D);
+        double sizeY = 0.35D + Math.min(0.15D, (clampedReach - 2.0D) * 0.04D);
+
+        return new MultiOBBCollider(3, sizeX, sizeY, sizeZ, 0.0D, 0.0D, centerZ);
+    }
 
     public static boolean applyMeleeHit(ServerPlayer player, LivingEntity target, ItemStack heldItem, GunItem gunItem) {
         if (target == null || !target.isAlive() || target == player) {
