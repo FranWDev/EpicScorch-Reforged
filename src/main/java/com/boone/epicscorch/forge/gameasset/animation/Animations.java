@@ -1,6 +1,7 @@
 package com.boone.epicscorch.forge.gameasset.animation;
 
 import com.boone.epicscorch.forge.gameasset.animation.type.GunAimAnimation;
+import com.boone.epicscorch.forge.gameasset.animation.type.GunMeleeAnimation;
 import com.boone.epicscorch.forge.gameasset.animation.type.GunMoveAnimation;
 import com.boone.epicscorch.forge.gameasset.animation.type.LockedAnimation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,6 +14,7 @@ import yesman.epicfight.api.animation.types.ReboundAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.gameasset.Armatures;
+import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.model.armature.HumanoidArmature;
 
 @EventBusSubscriber(modid = "epicscorch", bus = Bus.MOD)
@@ -42,6 +44,8 @@ public class Animations {
    public static AnimationAccessor<LockedAnimation> BIPED_MINI_GUN_RELOAD;
    public static AnimationAccessor<GunAimAnimation> BIPED_GRENADE_ARM;
    public static AnimationAccessor<ReboundAnimation> BIPED_GRENADE_THROW;
+   public static AnimationAccessor<GunMeleeAnimation> BIPED_GUN_MELEE1;
+   public static AnimationAccessor<GunMeleeAnimation> BIPED_GUN_MELEE2;
 
    @SubscribeEvent
    public static void registerAnimations(AnimationRegistryEvent event) {
@@ -121,6 +125,13 @@ public class Animations {
       ));
       BIPED_GRENADE_THROW = builder.nextAccessor("biped/combat/grenade_throw", (accessor) -> new ReboundAnimation(
          0.05f, false, accessor, "biped/combat/grenade_throw", "biped/combat/grenade_throw", "biped/combat/grenade_throw", "biped/combat/grenade_throw", bipedArmature
+      ));
+
+      BIPED_GUN_MELEE1 = builder.nextAccessor("biped/combat/gun_melee1", (accessor) -> new GunMeleeAnimation(
+         0.05f, 0.05f, 0.15f, 0.7f, ColliderPreset.TOOLS, bipedArmature.get().toolR, accessor, "biped/combat/axe_auto1", bipedArmature
+      ));
+      BIPED_GUN_MELEE2 = builder.nextAccessor("biped/combat/gun_melee2", (accessor) -> new GunMeleeAnimation(
+         0.05f, 0.05f, 0.15f, 0.85f, ColliderPreset.TOOLS, bipedArmature.get().toolR, accessor, "biped/combat/axe_auto2", bipedArmature
       ));
    }
 }
