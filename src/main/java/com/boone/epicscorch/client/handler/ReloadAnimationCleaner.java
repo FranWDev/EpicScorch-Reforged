@@ -9,6 +9,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.ribs.scguns.item.GunItem;
+import com.boone.epicscorch.forge.gameasset.animation.type.LockedAnimation;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.client.ClientEngine;
@@ -52,24 +54,36 @@ public class ReloadAnimationCleaner {
         if (wasInaction && !isInaction) {
             ItemStack stack = player.getMainHandItem();
             if (stack.getItem() instanceof GunItem) {
+                CompoundTag tag = stack.getOrCreateTag();
+                boolean wasReloading = tag.getBoolean("scguns:IsReloading") || !tag.getString("scguns:ReloadState").isEmpty();
+
                 var animator = playerPatch.getClientAnimator();
                 if (animator != null) {
                     try {
-                        // Force reload layer off to prevent re-activation
                         Layer reloadLayer = animator.getCompositeLayer(Layer.Priority.MIDDLE);
                         if (reloadLayer != null && !reloadLayer.isOff()) {
-                            reloadLayer.off(playerPatch);
+                            DynamicAnimation currentAnim =
+                                reloadLayer.animationPlayer.getRealAnimation() != null
+                                    ? reloadLayer.animationPlayer.getRealAnimation().get()
+                                    : null;
+                            boolean isPlayingReload = currentAnim instanceof LockedAnimation;
+
+                            // Only force reload layer off if the player was actively reloading
+                            if (wasReloading || isPlayingReload) {
+                                reloadLayer.off(playerPatch);
+                            }
                         }
                     } catch (Exception e) {
                         // Ignore errors in cleanup
                     }
                 }
 
-                // Clean NBT flags so Epic Fight doesn't re-detect reload
-                CompoundTag tag = stack.getOrCreateTag();
-                tag.putBoolean("scguns:IsReloading", false);
-                tag.putString("scguns:ReloadState", "");
-                tag.putBoolean("scguns:IsPlayingReloadStop", false);
+                if (wasReloading) {
+                    // Clean NBT flags so Epic Fight doesn't re-detect reload
+                    tag.putBoolean("scguns:IsReloading", false);
+                    tag.putString("scguns:ReloadState", "");
+                    tag.putBoolean("scguns:IsPlayingReloadStop", false);
+                }
             }
         }
 
