@@ -7,6 +7,7 @@ modId="epicscorch"
 version="1.0.0"
 displayName="Epic Scorch"
 authors="FranWDev (Reforged from bakdpotato11 & hd42)"
+logoFile="epicscorch.png"
 description='''
 Unofficial reforge for Epic Scorch. 
 Original mod by bakdpotato11. 
