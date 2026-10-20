@@ -26,9 +26,6 @@ import yesman.epicfight.api.client.event.types.entity.ModifyPlayerLivingMotionEv
 @OnlyIn(Dist.CLIENT)
 public class AbstractClientPlayerPatchMixin {
 
-    private static final int AIM_LEAVE_HYSTERESIS = 10; // Increased to bridge roll gaps
-    private static final Map<UUID, Integer> aimHoldCounters = new HashMap<>();
-
     public static void register() {
         EpicFightClientEventHooks.Entity.MODIFY_PLAYER_LIVING_MOTION_COMPOSITE.registerEvent(
             AbstractClientPlayerPatchMixin::onCompositeMotion,
@@ -45,10 +42,8 @@ public class AbstractClientPlayerPatchMixin {
             return;
 
         ItemStack stack = player.getMainHandItem();
-        UUID id = player.getUUID();
 
         if (!(stack.getItem() instanceof GunItem)) {
-            aimHoldCounters.remove(id);
             return;
         }
 
@@ -58,26 +53,7 @@ public class AbstractClientPlayerPatchMixin {
         boolean reloading = isActuallyReloading(player);
         boolean stoppingReload = isStoppingReload(stack);
 
-        // Reset hysteresis counter immediately during restrictions (sprinting, dodging, cooldown)
-        // to prevent LivingMotions.AIM from persisting and causing animation conflicts.
-        if (restricted) {
-            aimHoldCounters.put(id, 0);
-        }
-
         if (aiming && !restricted && !inAction && !isDrawingWeapon(player)) {
-            aimHoldCounters.put(id, AIM_LEAVE_HYSTERESIS);
-            event.setMotion(LivingMotions.AIM);
-            return;
-        }
-
-        if (inAction) {
-            aimHoldCounters.put(id, 0);
-            return;
-        }
-
-        int aimHold = aimHoldCounters.getOrDefault(id, 0);
-        if (aimHold > 0 && !restricted) {
-            aimHoldCounters.put(id, aimHold - 1);
             event.setMotion(LivingMotions.AIM);
             return;
         }
