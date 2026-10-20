@@ -90,7 +90,7 @@ public abstract class MeleeAttackHandlerMixin {
             ? Animations.BIPED_GUN_MELEE1
             : Animations.BIPED_GUN_MELEE2;
 
-        patch.playAnimationSynchronized(anim, 0.05F);
+        patch.playAnimationSynchronized(anim, 0.15F);
 
         ci.cancel();
     }
