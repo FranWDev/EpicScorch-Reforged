@@ -23,7 +23,9 @@
     "AimingHandlerAccessor",
     "AimingHandlerMixin",
     "EpicFightCameraAPIMixin",
-    "ReloadHandlerMixin"
+    "ReloadHandlerMixin",
+    "ClientMeleeAttackHandlerMixin",
+    "GunRenderingHandlerMixin"
   ],
   "server": [
     "ReloadTrackerMixin",
