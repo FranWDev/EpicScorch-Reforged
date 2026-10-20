@@ -51,12 +51,18 @@ public class GunMeleeHelper {
 
     private static Collider createColliderForReach(float reach) {
         double clampedReach = Math.max(1.5D, Math.min(6.0D, reach));
-        double sizeZ = 0.45D + (clampedReach - 2.0D) * 0.28D;
-        double centerZ = -0.20D - (clampedReach - 2.0D) * 0.38D;
+        // In the swing animation orientation for Tool_R:
+        // Local Y projects horizontally forward towards the enemy (reach / 'largo').
+        // Local Z projects vertically up/down (height / 'alto').
+        // Local X is lateral thickness.
+        // We scale sizeY and centerY with reach so the hitbox extends forward along the weapon reach,
+        // while sizeZ remains consistent with the attack strike thickness.
         double sizeX = 0.35D + Math.min(0.15D, (clampedReach - 2.0D) * 0.04D);
-        double sizeY = 0.35D + Math.min(0.15D, (clampedReach - 2.0D) * 0.04D);
+        double sizeY = 0.45D + (clampedReach - 2.0D) * 0.28D;
+        double sizeZ = 0.35D + Math.min(0.15D, (clampedReach - 2.0D) * 0.04D);
+        double centerY = 0.20D + (clampedReach - 2.0D) * 0.38D;
 
-        return new MultiOBBCollider(3, sizeX, sizeY, sizeZ, 0.0D, 0.0D, centerZ);
+        return new MultiOBBCollider(3, sizeX, sizeY, sizeZ, 0.0D, centerY, 0.0D);
     }
 
     public static boolean applyMeleeHit(ServerPlayer player, LivingEntity target, ItemStack heldItem, GunItem gunItem) {
