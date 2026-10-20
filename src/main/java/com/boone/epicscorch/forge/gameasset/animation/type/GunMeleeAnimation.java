@@ -17,10 +17,16 @@ import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
+import yesman.epicfight.api.animation.LivingMotion;
+import yesman.epicfight.api.animation.LivingMotions;
+import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class GunMeleeAnimation extends ComboAttackAnimation {
+
+    protected final Joint joint;
 
     public GunMeleeAnimation(
         float transitionTime,
@@ -34,11 +40,28 @@ public class GunMeleeAnimation extends ComboAttackAnimation {
         AssetAccessor<? extends Armature> armature
     ) {
         super(transitionTime, preDelay, contact, recovery, collider, joint, accessor, armature);
+        this.joint = joint;
         this.resourceLocation = ResourceLocation.fromNamespaceAndPath("epicfight", "animmodels/animations/" + clipPath + ".json");
         this.addProperty(
             StaticAnimationProperty.PLAY_SPEED_MODIFIER,
             (DynamicAnimation anim, LivingEntityPatch<?> patch, float speed, float prev, float elapsed) -> speed * 0.8F
         );
+    }
+
+    @Override
+    public void end(LivingEntityPatch<?> entitypatch, AssetAccessor<? extends DynamicAnimation> nextAnimation, boolean isEnd) {
+        super.end(entitypatch, nextAnimation, isEnd);
+        if (entitypatch.isLogicalClient()) {
+            ClientAnimator animator = entitypatch.getClientAnimator();
+            entitypatch.updateMotion(false);
+            LivingMotion motion = entitypatch.currentCompositeMotion;
+            if (motion != null && motion != LivingMotions.NONE) {
+                AssetAccessor<? extends StaticAnimation> holdAnim = animator.getCompositeLivingMotion(motion);
+                if (holdAnim != null && holdAnim.isPresent()) {
+                    animator.playAnimation(holdAnim, 0.0F);
+                }
+            }
+        }
     }
 
     @Override
