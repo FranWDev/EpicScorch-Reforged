@@ -28,7 +28,7 @@ import yesman.epicfight.api.client.forgeevent.UpdatePlayerMotionEvent;
 @EventBusSubscriber(modid = "epicscorch", bus = EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class AbstractClientPlayerPatchMixin {
 
-    private static final int AIM_LEAVE_HYSTERESIS = 10; // Increased to bridge roll gaps
+    private static final int AIM_LEAVE_HYSTERESIS = 5; // Reduced from 10 to prevent aim loop while smoothing transition
     private static final Map<UUID, Integer> aimHoldCounters = new HashMap<>();
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
