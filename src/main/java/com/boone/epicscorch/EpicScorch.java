@@ -14,6 +14,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import com.boone.epicscorch.config.EpicScorchConfig;
 import com.boone.epicscorch.forge.client.ClientEventHandler;
 import com.boone.epicscorch.forge.world.capabilities.items.GunCapabilityPresets;
+import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 
 @Mod("epicscorch")
 public class EpicScorch {
@@ -25,6 +26,9 @@ public class EpicScorch {
       IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
       modEventBus.addListener(this::onCommonSetup);
       
+      // Ensure Epic Fight WeaponCategories are initialized early for datapack deserialization
+      WeaponCategories.values();
+
       // Epic Fight Presets need the MOD bus
       modEventBus.register(GunCapabilityPresets.class);
 
