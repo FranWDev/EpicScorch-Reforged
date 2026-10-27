@@ -64,6 +64,8 @@ public class GunCapabilityProvider implements ICapabilityProvider, NonNullSuppli
 
       if (registryPath.contains("kiln")) {
           gripType = "BAZOOKA";
+      } else if (registryPath.contains("bomb_lance")) {
+          gripType = "TWO_HANDED";
       }
 
       this.capability = switch (gripType) {
