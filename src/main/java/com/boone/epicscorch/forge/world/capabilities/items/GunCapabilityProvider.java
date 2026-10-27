@@ -63,6 +63,8 @@ public class GunCapabilityProvider implements ICapabilityProvider<ItemStack, Voi
 
       if (registryPath.contains("kiln")) {
          gripType = "BAZOOKA";
+      } else if (registryPath.contains("bomb_lance")) {
+         gripType = "TWO_HANDED";
       }
 
       if ("UNKNOWN".equals(gripType)) {
