@@ -14,6 +14,8 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 
+import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
+
 @Mod("epicscorch")
 public class EpicScorch {
    public static final String MOD_ID = "epicscorch";
@@ -24,6 +26,9 @@ public class EpicScorch {
       modEventBus.addListener(this::onCommonSetup);
       modEventBus.addListener(GunCapabilityProvider::registerCapabilities);
       
+      // Ensure Epic Fight WeaponCategories are initialized early for datapack deserialization
+      WeaponCategories.values();
+
       this.registerSharedEventListeners();
       GunCapabilityPresets.register();
       
