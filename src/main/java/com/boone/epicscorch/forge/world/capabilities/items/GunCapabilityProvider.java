@@ -53,13 +53,19 @@ public class GunCapabilityProvider implements ICapabilityProvider, NonNullSuppli
               gripType = "ONE_HANDED";
           } else if (registryPath.contains("rifle") || registryPath.contains("musket") || registryPath.contains("carbine") || registryPath.contains("shotgun") || registryPath.contains("blunderbuss") || registryPath.contains("longarm")) {
               gripType = "TWO_HANDED_SHOTGUN";
-          } else if (registryPath.contains("bazooka") || registryPath.contains("rocket") || registryPath.contains("launcher")) {
+          } else if (registryPath.contains("bazooka") || registryPath.contains("rocket") || registryPath.contains("launcher") || registryPath.contains("kiln")) {
               gripType = "BAZOOKA";
           } else if (registryPath.contains("minigun") || registryPath.contains("mini_gun") || registryPath.contains("gatling")) {
               gripType = "MINI_GUN";
           } else {
               gripType = "TWO_HANDED_SHOTGUN"; 
           }
+      }
+
+      if (registryPath.contains("kiln")) {
+          gripType = "BAZOOKA";
+      } else if (registryPath.contains("bomb_lance")) {
+          gripType = "TWO_HANDED";
       }
 
       this.capability = switch (gripType) {
