@@ -1,12 +1,16 @@
 package com.boone.epicscorch.mixins.scg;
 
+import com.boone.epicscorch.compat.shouldersurfing.ShoulderSurfingAimRotationHandler;
+import com.boone.epicscorch.compat.shouldersurfing.ShoulderSurfingCompatHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.ribs.scguns.client.handler.ShootingHandler;
 import yesman.epicfight.api.animation.types.EntityState;
@@ -69,10 +73,10 @@ public abstract class ShootingHandlerMixin {
      * (yaw/pitch, head, body) are precisely aligned with the 3D crosshair target before C2SMessageShoot is dispatched.
      */
     @Inject(method = "fire", at = @At("HEAD"))
-    private void epicscorch$alignRotationBeforeFire(Player player, ItemStack heldItem, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
-        if (player instanceof net.minecraft.client.player.LocalPlayer localPlayer) {
-            if (com.boone.epicscorch.compat.shouldersurfing.ShoulderSurfingCompatHelper.isActiveShoulderSurfing()) {
-                com.boone.epicscorch.compat.shouldersurfing.ShoulderSurfingAimRotationHandler.alignPlayerWithCrosshair(localPlayer);
+    private void epicscorch$alignRotationBeforeFire(Player player, ItemStack heldItem, CallbackInfo ci) {
+        if (player instanceof LocalPlayer localPlayer) {
+            if (ShoulderSurfingCompatHelper.isActiveShoulderSurfing()) {
+                ShoulderSurfingAimRotationHandler.alignPlayerWithCrosshair(localPlayer);
             }
         }
     }

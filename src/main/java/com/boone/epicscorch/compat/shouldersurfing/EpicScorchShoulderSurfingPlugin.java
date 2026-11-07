@@ -5,6 +5,8 @@ import com.github.exopandora.shouldersurfing.api.client.event.ComputePlayerAimSt
 import com.github.exopandora.shouldersurfing.api.client.event.ComputePlayerUseItemStateEvent;
 import com.github.exopandora.shouldersurfing.api.event.IEventBus;
 import com.github.exopandora.shouldersurfing.api.plugin.IShoulderSurfingPlugin;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 public class EpicScorchShoulderSurfingPlugin implements IShoulderSurfingPlugin {
@@ -30,7 +32,7 @@ public class EpicScorchShoulderSurfingPlugin implements IShoulderSurfingPlugin {
     }
 
     private void onComputeCameraCoupling(ComputeCameraCouplingEvent event) {
-        net.minecraft.client.player.LocalPlayer player = net.minecraft.client.Minecraft.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && (ShoulderSurfingCompatHelper.isAimingGun(player) || ShoulderSurfingCompatHelper.isShootingGun(player))) {
             event.setResult(true);
         }
