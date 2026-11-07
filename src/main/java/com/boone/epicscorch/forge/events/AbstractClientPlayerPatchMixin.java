@@ -1,5 +1,6 @@
 package com.boone.epicscorch.forge.events;
 
+import com.boone.epicscorch.compat.shouldersurfing.ShoulderSurfingCompatHelper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -117,9 +118,8 @@ public class AbstractClientPlayerPatchMixin {
 
     private static boolean isActuallyAiming(AbstractClientPlayer player) {
         if (player.isLocalPlayer()) {
-            // Use the local AimingHandler state, which correctly respects blocks during
-            // actions/inaction
-            return AimingHandler.get().isAiming();
+            // Use the local AimingHandler state, or aim key press for weapons without ADS
+            return AimingHandler.get().isAiming() || ShoulderSurfingCompatHelper.isAimKeyPressed();
         }
 
         // For remote players, use the synced data key to avoid mirroring the local
